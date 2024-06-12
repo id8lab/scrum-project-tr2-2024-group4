@@ -1,11 +1,13 @@
 import pygame
 import sys
 from game_screen import run_game
+from setting_screen import setting
+from high_scores import high_scores
 
 # Pygame
 pygame.init()
 
-# setting screen
+# menu screen
 screen_width = 800
 screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -60,10 +62,10 @@ while running:
             if button_clicked == "Start Game":
                 run_game(screen)  
             elif button_clicked == "Settings":
-                print("Settings clicked")
+                setting(screen)
                 
             elif button_clicked == "High Scores":
-                print("High Scores clicked")
+                high_scores(screen)
             
             elif button_clicked == "Exit":
                 running = False
@@ -73,6 +75,3 @@ while running:
 
 pygame.quit()
 sys.exit()
-
-
-
