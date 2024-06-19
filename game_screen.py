@@ -2,6 +2,10 @@ import pygame
 import sys
 import random  # Import the random module
 
+
+
+
+
 # Function definition
 def run_game(screen):
     pygame.init()
@@ -14,6 +18,18 @@ def run_game(screen):
     current_frame = 0
     frame_count = 0
 
+    # Load background music
+    try:
+        pygame.mixer.music.load('background_music.mp3')
+        pygame.mixer.music.set_volume(0.5)  # Volume ranges from 0.0 to 1.0
+        pygame.mixer.music.play(-1)  # -1 means loop indefinitely
+        print("Background music loaded and playing")
+    except pygame.error as e:
+        print(f"Failed to load or play background music: {e}")
+
+
+
+    
     # Score, Level, and Life variables
     score = 0
     level = 1
