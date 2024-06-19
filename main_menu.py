@@ -16,13 +16,6 @@ pygame.display.set_caption("Main Menu")
 
 # Load the video
 cap = cv2.VideoCapture('Background.mp4')
-try:
-    pygame.mixer.music.load('main_menu_music.mp3')
-    pygame.mixer.music.set_volume(0.5)  # Volume ranges from 0.0 to 1.0
-    pygame.mixer.music.play(-1)  # -1 means loop indefinitely
-    print("main menu music loaded and playing")
-except pygame.error as e:
-    print(f"Failed to load or play main menu music: {e}")
 
 # Define colors
 WHITE = (255, 255, 255)
@@ -39,7 +32,6 @@ def draw_main_menu():
     frame = cv2.resize(frame, (screen_width, screen_height))
     frame = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
     screen.blit(frame, (0, 0))
-    
 
     # Dynamic font sizes based on screen dimensions
     title_font_size = max(50, min(100, min(screen_width, screen_height) // 6))
