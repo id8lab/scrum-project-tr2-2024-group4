@@ -2,6 +2,8 @@ import pygame
 import sys
 import random  # Import the random module
 
+
+
 # Function definition
 def run_game(screen):
     pygame.init()
@@ -32,6 +34,26 @@ def run_game(screen):
 
     # Game mode
     mode = 'rectangle'  # Start with 'rectangle' mode, change to 'sprite' with 'S' key
+
+
+    # Load background music
+    try:
+        pygame.mixer.music.load('background_music.mp3')
+        pygame.mixer.music.set_volume(0.5)  # Volume ranges from 0.0 to 1.0
+        pygame.mixer.music.play(-1)  # -1 means loop indefinitely
+        print("Background music loaded and playing")
+    except pygame.error as e:
+        print(f"Failed to load or play background music: {e}")
+
+
+    try:
+        hit_sound = pygame.mixer.Sound('shooting.mp3')
+        hit_sound.set_volume(0.5)  # Volume ranges from 0.0 to 1.0
+        print("Hit sound loaded successfully")
+    except pygame.error as e:
+        print(f"Failed to load hit sound: {e}")
+        sys.exit()
+
 
     # Game loop
     running = True
@@ -116,6 +138,7 @@ def run_game(screen):
                     score += 10
                     if score % 100 == 0:
                         level += 1
+                    hit_sound.play()
 
         # Display Score, Level, and Lives
         score_text = font.render(f'Score: {score}', True, (255, 255, 255))
