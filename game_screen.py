@@ -16,24 +16,14 @@ def run_game(screen):
     current_frame = 0
     frame_count = 0
 
-    # Score, Level, and Life variables
-    score = 0
-    level = 1
-    lives = 3
-
-    # Bullet variables
-    bullets = []
-    bullet_speed = -10
-
-    # Enemy variables
-    enemies = []
-    enemy_speed = 5
-
-    # Font for displaying text
-    font = pygame.font.Font(None, 36)
-
-    # Game mode
-    mode = 'rectangle'  # Start with 'rectangle' mode, change to 'sprite' with 'S' key
+    # Load enemy images
+    try:
+        enemy_images = [pygame.image.load('enemy1.png'), pygame.image.load('enemy2.png')]
+        enemy_images = [pygame.transform.scale(img, (rect_width, rect_height)) for img in enemy_images]
+        print("Enemy images loaded successfully")
+    except pygame.error as e:
+        print(f"Failed to load enemy images: {e}")
+        sys.exit()
 
 
     # Load background music
@@ -53,6 +43,26 @@ def run_game(screen):
     except pygame.error as e:
         print(f"Failed to load hit sound: {e}")
         sys.exit()
+
+    # Score, Level, and Life variables
+    score = 0
+    level = 1
+    lives = 3
+
+    # Bullet variables
+    bullets = []
+    bullet_speed = -10
+
+    # Enemy variables
+    enemies = []
+    enemy_speed = 5
+
+    # Font for displaying text
+    font = pygame.font.Font(None, 36)
+
+    # Game mode
+    mode = 'rectangle'  # Start with 'rectangle' mode, change to 'sprite' with 'S' key
+
 
 
     # Game loop
@@ -116,7 +126,8 @@ def run_game(screen):
         if len(enemies) < 5:  # Spawn enemies if fewer than 5
             enemy_x = random.randint(0, screen.get_width() - rect_width)  # Use random.randint
             enemy_y = random.randint(-100, -40)  # Use random.randint
-            enemies.append([enemy_x, enemy_y])
+            enemy_image = random.choice(enemy_images)
+            enemies.append([enemy_x, enemy_y, enemy_image])
 
         for enemy in enemies:
             enemy[1] += enemy_speed
@@ -126,7 +137,7 @@ def run_game(screen):
 
         # Draw enemies
         for enemy in enemies:
-            pygame.draw.rect(screen, (255, 0, 0), (enemy[0], enemy[1], rect_width, rect_height))
+            screen.blit(enemy[2], (enemy[0], enemy[1]))
 
         # Check for collisions
         for bullet in bullets:
