@@ -5,24 +5,6 @@ import json
 import os
 
 
-def load_high_scores(file_path):
-    if os.path.exists(file_path):
-        try:
-            with open(file_path, 'r') as file:
-                data = file.read().strip()
-                if data:
-                    return json.loads(data)
-        except json.JSONDecodeError:
-            print("Error decoding JSON file")
-    return []
-
-def save_high_score(file_path, name, score):
-    high_scores = load_high_scores(file_path)
-    high_scores.append({"name": name, "score": score})
-    high_scores = sorted(high_scores, key=lambda x: x['score'], reverse=True)[:10]  # Keep top 10 scores
-    with open(file_path, 'w') as file:
-        json.dump(high_scores, file, indent=4)
-
 # Function definition
 def run_game(screen):
     pygame.init()
