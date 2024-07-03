@@ -1,6 +1,27 @@
 import pygame
 import sys
 import random
+import json
+import os
+
+
+def load_high_scores(file_path):
+    if os.path.exists(file_path):
+        try:
+            with open(file_path, 'r') as file:
+                data = file.read().strip()
+                if data:
+                    return json.loads(data)
+        except json.JSONDecodeError:
+            print("Error decoding JSON file")
+    return []
+
+def save_high_score(file_path, name, score):
+    high_scores = load_high_scores(file_path)
+    high_scores.append({"name": name, "score": score})
+    high_scores = sorted(high_scores, key=lambda x: x['score'], reverse=True)[:10]  # Keep top 10 scores
+    with open(file_path, 'w') as file:
+        json.dump(high_scores, file, indent=4)
 
 # Function definition
 def run_game(screen):
@@ -153,6 +174,14 @@ def run_game(screen):
                     if score % 100 == 0:
                         level += 1
                     hit_sound.play()
+
+
+         # Check for player-enemy collisions
+        player_rect = pygame.Rect(rect_x, rect_y, rect_width, rect_height)
+        for enemy in enemies:
+            enemy_rect = pygame.Rect(enemy[0], enemy[1], rect_width, rect_height)
+            if player_rect.colliderect(enemy_rect):
+                lives = 1  
 
         # Display Score and Level
         score_text = font.render(f'Score: {score}', True, (255, 255, 255))
