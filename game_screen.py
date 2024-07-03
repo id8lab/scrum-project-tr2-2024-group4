@@ -23,6 +23,16 @@ def run_game(screen):
         print(f"Failed to load enemy images: {e}")
         sys.exit()
 
+    # Load flight image for the player
+    try:
+        flight_image = pygame.image.load('flight.png')
+        flight_image = pygame.transform.scale(flight_image, (rect_width, rect_height))
+        print("Flight image loaded successfully")
+    except pygame.error as e:
+        print(f"Failed to load flight image: {e}")
+        sys.exit()
+
+
     # Load background music
     try:
         pygame.mixer.music.load('background_music.mp3')
@@ -99,21 +109,11 @@ def run_game(screen):
         if keys[pygame.K_DOWN]:
             rect_y += rect_speed
 
-        if mode == 'sprite' and sprite_frames:
-            # Animation control
-            frame_count += 1
-            if frame_count >= 10:  # Change frame every 10 game loops
-                current_frame = (current_frame + 1) % len(sprite_frames)
-                frame_count = 0
-            # Draw the current frame
-            screen.fill((0, 0, 0))  # Black
-            screen.blit(sprite_frames[current_frame], player_pos)
-        else:
-            # Fill the screen with black
-            screen.fill((0, 0, 0))  # Black
+        # Fill the screen with black
+        screen.fill((0, 0, 0))  # Black
 
-            # Draw the rectangle
-            pygame.draw.rect(screen, (255, 255, 255), (rect_x, rect_y, rect_width, rect_height))
+        # Draw the flight image
+        screen.blit(flight_image, (rect_x, rect_y))
 
         # Update bullets
         for bullet in bullets:
