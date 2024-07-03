@@ -9,10 +9,7 @@ def run_game(screen):
     rect_x, rect_y = 50, 50
     rect_width, rect_height = 100, 100
     rect_speed = 5
-    sprite_frames = []  # List of surfaces representing different frames
-    player_pos = (350, 450)
-    current_frame = 0
-    frame_count = 0
+    
 
     # Load enemy images
     try:
