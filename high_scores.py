@@ -2,7 +2,7 @@ import pygame
 import json
 
 def high_scores(screen):
-    print("Displaying high scores...")  # 调试输出
+    print("Displaying high scores...")  
 
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
@@ -14,7 +14,7 @@ def high_scores(screen):
     try:
         with open('high_scores.json', 'r') as f:
             high_scores_data = json.load(f)
-        print(f"Loaded high scores: {high_scores_data}")  # 调试输出
+        print(f"Loaded high scores: {high_scores_data}")  
     except FileNotFoundError:
         print("Error: 'high_scores.json' file not found. Creating a new one.")
         high_scores_data = []

@@ -1,8 +1,6 @@
 import pygame
 import sys
-import random  # Import the random module
-
-
+import random
 
 # Function definition
 def run_game(screen):
@@ -25,6 +23,15 @@ def run_game(screen):
         print(f"Failed to load enemy images: {e}")
         sys.exit()
 
+    # Load flight image for the player
+    try:
+        flight_image = pygame.image.load('flight.png')
+        flight_image = pygame.transform.scale(flight_image, (rect_width, rect_height))
+        print("Flight image loaded successfully")
+    except pygame.error as e:
+        print(f"Failed to load flight image: {e}")
+        sys.exit()
+
 
     # Load background music
     try:
@@ -35,7 +42,6 @@ def run_game(screen):
     except pygame.error as e:
         print(f"Failed to load or play background music: {e}")
 
-
     try:
         hit_sound = pygame.mixer.Sound('shooting.mp3')
         hit_sound.set_volume(0.5)  # Volume ranges from 0.0 to 1.0
@@ -44,10 +50,19 @@ def run_game(screen):
         print(f"Failed to load hit sound: {e}")
         sys.exit()
 
+    # Load heart image for lives
+    try:
+        heart_image = pygame.image.load('heart.png')
+        heart_image = pygame.transform.scale(heart_image, (30, 30))  # Adjust the size of the heart image
+        print("Heart image loaded successfully")
+    except pygame.error as e:
+        print(f"Failed to load heart image: {e}")
+        sys.exit()
+
     # Score, Level, and Life variables
     score = 0
     level = 1
-    lives = 3
+    lives = 10
 
     # Bullet variables
     bullets = []
@@ -62,8 +77,6 @@ def run_game(screen):
 
     # Game mode
     mode = 'rectangle'  # Start with 'rectangle' mode, change to 'sprite' with 'S' key
-
-
 
     # Game loop
     running = True
@@ -96,21 +109,11 @@ def run_game(screen):
         if keys[pygame.K_DOWN]:
             rect_y += rect_speed
 
-        if mode == 'sprite' and sprite_frames:
-            # Animation control
-            frame_count += 1
-            if frame_count >= 10:  # Change frame every 10 game loops
-                current_frame = (current_frame + 1) % len(sprite_frames)
-                frame_count = 0
-            # Draw the current frame
-            screen.fill((0, 0, 0))  # Black
-            screen.blit(sprite_frames[current_frame], player_pos)
-        else:
-            # Fill the screen with black
-            screen.fill((0, 0, 0))  # Black
+        # Fill the screen with black
+        screen.fill((0, 0, 0))  # Black
 
-            # Draw the rectangle
-            pygame.draw.rect(screen, (255, 255, 255), (rect_x, rect_y, rect_width, rect_height))
+        # Draw the flight image
+        screen.blit(flight_image, (rect_x, rect_y))
 
         # Update bullets
         for bullet in bullets:
@@ -151,14 +154,24 @@ def run_game(screen):
                         level += 1
                     hit_sound.play()
 
-        # Display Score, Level, and Lives
+        # Display Score and Level
         score_text = font.render(f'Score: {score}', True, (255, 255, 255))
         level_text = font.render(f'Level: {level}', True, (255, 255, 255))
-        lives_text = font.render(f'Lives: {lives}', True, (255, 255, 255))
 
         screen.blit(score_text, (10, 10))
         screen.blit(level_text, (10, 50))
-        screen.blit(lives_text, (10, 90))
+
+        # Display Lives as hearts
+        for i in range(lives):
+            screen.blit(heart_image, (screen.get_width() - (i + 1) * 40, screen.get_height() - 40))
+
+        # Check for game over
+        if lives <= 0:
+            game_over_text = font.render('Game Over', True, (255, 0, 0))
+            screen.blit(game_over_text, (screen.get_width() // 2 - 100, screen.get_height() // 2 - 20))
+            pygame.display.flip()
+            pygame.time.wait(2000)  # Wait for 2 seconds before quitting
+            running = False
 
         # Update the display
         pygame.display.flip()
