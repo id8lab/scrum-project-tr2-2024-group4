@@ -1,9 +1,6 @@
 import pygame
 import sys
 import random
-import json
-import os
-
 
 # Function definition
 def run_game(screen):
