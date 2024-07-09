@@ -56,6 +56,35 @@ def run_game(screen):
         print(f"Failed to load heart image: {e}")
         sys.exit()
 
+
+    # Load boss image
+    try:
+        boss_image = pygame.image.load('boss2.png')
+        boss_image = pygame.transform.scale(boss_image, (rect_width * 2, rect_height * 2))  # Boss is larger
+        print("Boss image loaded successfully")
+    except pygame.error as e:
+        print(f"Failed to load boss image: {e}")
+        sys.exit()
+
+    # Boss class
+    class Boss(pygame.sprite.Sprite):
+        def __init__(self, image):
+            super().__init__()
+            self.image = image
+            self.rect = self.image.get_rect()
+            self.rect.x = screen.get_width() // 2 - self.rect.width // 2
+            self.rect.y = 50
+            self.health = 100
+
+        def update(self):
+            # Boss behavior here (e.g., move left and right)
+            self.rect.x += random.choice([-5, 5])
+            if self.rect.right >= screen.get_width() or self.rect.left <= 0:
+                self.rect.x -= random.choice([-5, 5])
+
+        def draw(self, screen):
+            screen.blit(self.image, self.rect.topleft)
+
     # Score, Level, and Life variables
     score = 0
     level = 1
@@ -77,6 +106,7 @@ def run_game(screen):
 
     # Game loop
     running = True
+    boss = None  
     while running:
         keys = pygame.key.get_pressed()
         for event in pygame.event.get():
@@ -157,7 +187,28 @@ def run_game(screen):
         for enemy in enemies:
             enemy_rect = pygame.Rect(enemy[0], enemy[1], rect_width, rect_height)
             if player_rect.colliderect(enemy_rect):
-                lives = 1  
+                lives = 1
+
+        # Spawn boss at level 5
+        if level == 5 and boss is None:
+            boss = Boss(boss_image)
+
+        # Update and draw boss if present
+        if boss:
+            boss.update()
+            boss.draw(screen)
+
+        # Check for bullet-boss collisions
+        if boss:
+            boss_rect = boss.rect
+            for bullet in bullets:
+                if boss_rect.collidepoint(bullet):
+                    bullets.remove(bullet)
+                    boss.health -= 10
+                    hit_sound.play()
+                    if boss.health <= 0:
+                        boss = None
+                        score += 500  # Reward for defeating boss  
 
         # Display Score and Level
         score_text = font.render(f'Score: {score}', True, (255, 255, 255))
