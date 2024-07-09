@@ -68,22 +68,57 @@ def run_game(screen):
 
     # Boss class
     class Boss(pygame.sprite.Sprite):
-        def __init__(self, image):
+        def __init__(self, image, move_speed=20):
             super().__init__()
             self.image = image
             self.rect = self.image.get_rect()
             self.rect.x = screen.get_width() // 2 - self.rect.width // 2
             self.rect.y = 50
             self.health = 100
+            self.bullets = []
+            self.bullet_speed = 5  # Adjust bullet speed as needed
+            self.last_shot_time = pygame.time.get_ticks()
+            self.shoot_interval = 3000  # Adjust shoot interval as needed
+            self.shoot_timer = 0
+            self.move_speed = move_speed  # Boss movement speed
+           
 
         def update(self):
             # Boss behavior here (e.g., move left and right)
-            self.rect.x += random.choice([-5, 5])
+            print(f"Shoot Timer: {self.shoot_timer}, Shoot Interval: {self.shoot_interval}")
+            self.rect.x += random.choice([-self.move_speed, self.move_speed])
             if self.rect.right >= screen.get_width() or self.rect.left <= 0:
-                self.rect.x -= random.choice([-5, 5])
+                self.rect.x -= random.choice([-self.move_speed, self.move_speed])
+
+           # Update boss bullets
+            for bullet in self.bullets:
+                bullet[1] += self.bullet_speed
+                if bullet[1] > screen.get_height():
+                    self.bullets.remove(bullet)
+                
+            # Check shoot timer and interval
+            elapsed_time = pygame.time.get_ticks() - self.last_shot_time
+            self.shoot_timer += elapsed_time
+            self.last_shot_time = pygame.time.get_ticks()
+
+
+            if self.shoot_timer >= self.shoot_interval:
+                self.shoot_timer = 0
+                num_bullets = random.randint(5, 8)
+                for _ in range(num_bullets):
+                    self.shoot()
+
 
         def draw(self, screen):
             screen.blit(self.image, self.rect.topleft)
+            # Draw boss bullets
+            for bullet in self.bullets:
+                pygame.draw.circle(screen, (255, 0, 0), (bullet[0], bullet[1]), 5)
+
+        def shoot(self):
+            bullet_pos = [self.rect.x + self.rect.width // 2, self.rect.y + self.rect.height]
+            self.bullets.append(bullet_pos)
+        
 
     # Score, Level, and Life variables
     score = 0
@@ -190,7 +225,7 @@ def run_game(screen):
                 lives = 1
 
         # Spawn boss at level 5
-        if level == 5 and boss is None:
+        if level == 2 and boss is None:
             boss = Boss(boss_image)
 
         # Update and draw boss if present
@@ -198,8 +233,7 @@ def run_game(screen):
             boss.update()
             boss.draw(screen)
 
-        # Check for bullet-boss collisions
-        if boss:
+            # Check for bullet-boss collisions
             boss_rect = boss.rect
             for bullet in bullets:
                 if boss_rect.collidepoint(bullet):
@@ -209,6 +243,8 @@ def run_game(screen):
                     if boss.health <= 0:
                         boss = None
                         score += 500  # Reward for defeating boss  
+            if boss:
+                boss.shoot()            
 
         # Display Score and Level
         score_text = font.render(f'Score: {score}', True, (255, 255, 255))
