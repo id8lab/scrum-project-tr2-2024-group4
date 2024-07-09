@@ -13,7 +13,7 @@ def run_game(screen):
 
     # Load enemy images
     try:
-        enemy_images = [pygame.image.load('enemy1.png'), pygame.image.load('enemy2.png')]
+        enemy_images = [pygame.image.load('images/enemy1.png'), pygame.image.load('images/enemy2.png')]
         enemy_images = [pygame.transform.scale(img, (rect_width, rect_height)) for img in enemy_images]
         print("Enemy images loaded successfully")
     except pygame.error as e:
@@ -22,7 +22,7 @@ def run_game(screen):
 
     # Load flight image for the player
     try:
-        flight_image = pygame.image.load('flight.png')
+        flight_image = pygame.image.load('images/flight.png')
         flight_image = pygame.transform.scale(flight_image, (rect_width, rect_height))
         print("Flight image loaded successfully")
     except pygame.error as e:
@@ -32,7 +32,7 @@ def run_game(screen):
 
     # Load background music
     try:
-        pygame.mixer.music.load('background_music.mp3')
+        pygame.mixer.music.load('music/background_music.mp3')
         pygame.mixer.music.set_volume(0.5)  # Volume ranges from 0.0 to 1.0
         pygame.mixer.music.play(-1)  # -1 means loop indefinitely
         print("Background music loaded and playing")
@@ -40,7 +40,7 @@ def run_game(screen):
         print(f"Failed to load or play background music: {e}")
 
     try:
-        hit_sound = pygame.mixer.Sound('shooting.mp3')
+        hit_sound = pygame.mixer.Sound('music/shooting.mp3')
         hit_sound.set_volume(0.5)  # Volume ranges from 0.0 to 1.0
         print("Hit sound loaded successfully")
     except pygame.error as e:
@@ -49,7 +49,7 @@ def run_game(screen):
 
     # Load heart image for lives
     try:
-        heart_image = pygame.image.load('heart.png')
+        heart_image = pygame.image.load('images/heart.png')
         heart_image = pygame.transform.scale(heart_image, (30, 30))  # Adjust the size of the heart image
         print("Heart image loaded successfully")
     except pygame.error as e:
@@ -59,7 +59,7 @@ def run_game(screen):
 
     # Load boss image
     try:
-        boss_image = pygame.image.load('boss2.png')
+        boss_image = pygame.image.load('images/boss2.png')
         boss_image = pygame.transform.scale(boss_image, (rect_width * 2, rect_height * 2))  # Boss is larger
         print("Boss image loaded successfully")
     except pygame.error as e:
