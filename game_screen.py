@@ -75,11 +75,7 @@ def run_game(screen):
             self.bullets = []
             self.bullet_speed = 8  # Adjust bullet speed as needed
             self.last_shot_time = pygame.time.get_ticks()
-<<<<<<< HEAD
-            self.shoot_interval = 5000  # Adjust shoot interval as needed
-            self.shoot_timer = 0
-            self.move_speed = move_speed  # Boss movement speed
-            self.attack_mode = 'normal'  # Start with normal attack mode
+
            
 =======
             self.shoot_interval = 1000  # Adjust shoot interval to 1 second
