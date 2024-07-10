@@ -13,7 +13,7 @@ def run_game(screen):
 
     # Load enemy images
     try:
-        enemy_images = [pygame.image.load('enemy1.png'), pygame.image.load('enemy2.png')]
+        enemy_images = [pygame.image.load('images/enemy1.png'), pygame.image.load('images/enemy2.png')]
         enemy_images = [pygame.transform.scale(img, (rect_width, rect_height)) for img in enemy_images]
         print("Enemy images loaded successfully")
     except pygame.error as e:
@@ -22,7 +22,7 @@ def run_game(screen):
 
     # Load flight image for the player
     try:
-        flight_image = pygame.image.load('flight.png')
+        flight_image = pygame.image.load('images/flight.png')
         flight_image = pygame.transform.scale(flight_image, (rect_width, rect_height))
         print("Flight image loaded successfully")
     except pygame.error as e:
@@ -31,7 +31,7 @@ def run_game(screen):
 
     # Load background music
     try:
-        pygame.mixer.music.load('background_music.mp3')
+        pygame.mixer.music.load('music/background_music.mp3')
         pygame.mixer.music.set_volume(0.5)  # Volume ranges from 0.0 to 1.0
         pygame.mixer.music.play(-1)  # -1 means loop indefinitely
         print("Background music loaded and playing")
@@ -39,7 +39,7 @@ def run_game(screen):
         print(f"Failed to load or play background music: {e}")
 
     try:
-        hit_sound = pygame.mixer.Sound('shooting.mp3')
+        hit_sound = pygame.mixer.Sound('music/shooting.mp3')
         hit_sound.set_volume(0.5)  # Volume ranges from 0.0 to 1.0
         print("Hit sound loaded successfully")
     except pygame.error as e:
@@ -48,22 +48,87 @@ def run_game(screen):
 
     # Load heart image for lives
     try:
-        heart_image = pygame.image.load('heart.png')
+        heart_image = pygame.image.load('images/heart.png')
         heart_image = pygame.transform.scale(heart_image, (30, 30))  # Adjust the size of the heart image
         print("Heart image loaded successfully")
     except pygame.error as e:
         print(f"Failed to load heart image: {e}")
         sys.exit()
 
+<<<<<<< HEAD
     # Load boss image
     try:
         boss_image = pygame.image.load('Boss1.png')
         boss_image = pygame.transform.scale(boss_image, (200, 200))  # Adjust the size of the boss image
+=======
+
+    # Load boss image
+    try:
+        boss_image = pygame.image.load('images/boss2.png')
+        boss_image = pygame.transform.scale(boss_image, (rect_width * 2, rect_height * 2))  # Boss is larger
+>>>>>>> refs/remotes/origin/main
         print("Boss image loaded successfully")
     except pygame.error as e:
         print(f"Failed to load boss image: {e}")
         sys.exit()
 
+<<<<<<< HEAD
+=======
+    # Boss class
+    class Boss(pygame.sprite.Sprite):
+        def __init__(self, image, move_speed=20):
+            super().__init__()
+            self.image = image
+            self.rect = self.image.get_rect()
+            self.rect.x = screen.get_width() // 2 - self.rect.width // 2
+            self.rect.y = 50
+            self.health = 100
+            self.bullets = []
+            self.bullet_speed = 5  # Adjust bullet speed as needed
+            self.last_shot_time = pygame.time.get_ticks()
+            self.shoot_interval = 3000  # Adjust shoot interval as needed
+            self.shoot_timer = 0
+            self.move_speed = move_speed  # Boss movement speed
+           
+
+        def update(self):
+            # Boss behavior here (e.g., move left and right)
+            print(f"Shoot Timer: {self.shoot_timer}, Shoot Interval: {self.shoot_interval}")
+            self.rect.x += random.choice([-self.move_speed, self.move_speed])
+            if self.rect.right >= screen.get_width() or self.rect.left <= 0:
+                self.rect.x -= random.choice([-self.move_speed, self.move_speed])
+
+           # Update boss bullets
+            for bullet in self.bullets:
+                bullet[1] += self.bullet_speed
+                if bullet[1] > screen.get_height():
+                    self.bullets.remove(bullet)
+                
+            # Check shoot timer and interval
+            elapsed_time = pygame.time.get_ticks() - self.last_shot_time
+            self.shoot_timer += elapsed_time
+            self.last_shot_time = pygame.time.get_ticks()
+
+
+            if self.shoot_timer >= self.shoot_interval:
+                self.shoot_timer = 0
+                num_bullets = random.randint(5, 8)
+                for _ in range(num_bullets):
+                    self.shoot()
+
+
+        def draw(self, screen):
+            screen.blit(self.image, self.rect.topleft)
+            # Draw boss bullets
+            for bullet in self.bullets:
+                pygame.draw.circle(screen, (255, 0, 0), (bullet[0], bullet[1]), 5)
+
+        def shoot(self):
+            bullet_pos = [self.rect.x + self.rect.width // 2, self.rect.y + self.rect.height]
+            self.bullets.append(bullet_pos)
+        
+
+>>>>>>> refs/remotes/origin/main
     # Score, Level, and Life variables
     score = 0
     level = 1
@@ -91,6 +156,7 @@ def run_game(screen):
 
     # Game loop
     running = True
+    boss = None  
     while running:
         keys = pygame.key.get_pressed()
         for event in pygame.event.get():
@@ -165,6 +231,39 @@ def run_game(screen):
                         level += 1
                     hit_sound.play()
 
+<<<<<<< HEAD
+=======
+
+         # Check for player-enemy collisions
+        player_rect = pygame.Rect(rect_x, rect_y, rect_width, rect_height)
+        for enemy in enemies:
+            enemy_rect = pygame.Rect(enemy[0], enemy[1], rect_width, rect_height)
+            if player_rect.colliderect(enemy_rect):
+                lives = 1
+
+        # Spawn boss at level 5
+        if level == 2 and boss is None:
+            boss = Boss(boss_image)
+
+        # Update and draw boss if present
+        if boss:
+            boss.update()
+            boss.draw(screen)
+
+            # Check for bullet-boss collisions
+            boss_rect = boss.rect
+            for bullet in bullets:
+                if boss_rect.collidepoint(bullet):
+                    bullets.remove(bullet)
+                    boss.health -= 10
+                    hit_sound.play()
+                    if boss.health <= 0:
+                        boss = None
+                        score += 500  # Reward for defeating boss  
+            if boss:
+                boss.shoot()            
+
+>>>>>>> refs/remotes/origin/main
         # Display Score and Level
         score_text = font.render(f'Score: {score}', True, (255, 255, 255))
         level_text = font.render(f'Level: {level}', True, (255, 255, 255))
