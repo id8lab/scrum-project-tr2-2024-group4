@@ -7,11 +7,9 @@ import math
 def run_game(screen):
     pygame.init()
     # Game variables
-    rect_x, rect_y = 50, 50
     rect_width, rect_height = 100, 100
     rect_speed = 5
     
-
     # Load enemy images
     try:
         enemy_images = [pygame.image.load('images/enemy1.png'), pygame.image.load('images/enemy2.png')]
@@ -29,7 +27,6 @@ def run_game(screen):
     except pygame.error as e:
         print(f"Failed to load flight image: {e}")
         sys.exit()
-
 
     # Load background music
     try:
@@ -57,7 +54,6 @@ def run_game(screen):
         print(f"Failed to load heart image: {e}")
         sys.exit()
 
-
     # Load boss image
     try:
         boss_image = pygame.image.load('images/boss2.png')
@@ -77,35 +73,45 @@ def run_game(screen):
             self.rect.y = 50
             self.health = 100
             self.bullets = []
-            self.bullet_speed = 5  # Adjust bullet speed as needed
+            self.bullet_speed = 8  # Adjust bullet speed as needed
             self.last_shot_time = pygame.time.get_ticks()
+<<<<<<< HEAD
             self.shoot_interval = 5000  # Adjust shoot interval as needed
             self.shoot_timer = 0
             self.move_speed = move_speed  # Boss movement speed
             self.attack_mode = 'normal'  # Start with normal attack mode
            
+=======
+            self.shoot_interval = 1000  # Adjust shoot interval to 1 second
+            self.shoot_timer = 0
+            self.move_speed = move_speed  # Boss movement speed
+            self.attack_start_time = pygame.time.get_ticks()
+            self.attack_duration = 15000  # Boss appears for 15 seconds
+            self.attack_patterns = [self.shoot_straight, self.shoot_spread, self.shoot_diagonal, self.shoot_homing]
+            self.current_pattern = 0
+>>>>>>> refs/remotes/origin/main
 
         def update(self):
             # Boss behavior here (e.g., move left and right)
-            print(f"Shoot Timer: {self.shoot_timer}, Shoot Interval: {self.shoot_interval}")
             self.rect.x += random.choice([-self.move_speed, self.move_speed])
             if self.rect.right >= screen.get_width() or self.rect.left <= 0:
                 self.rect.x -= random.choice([-self.move_speed, self.move_speed])
 
-           # Update boss bullets
+            # Update boss bullets
             for bullet in self.bullets:
-                bullet[1] += self.bullet_speed
-                if bullet[1] > screen.get_height():
+                bullet[1] += bullet[2]  # bullet[2] contains bullet speed in y direction
+                bullet[0] += bullet[3]  # bullet[3] contains bullet speed in x direction
+                if bullet[1] > screen.get_height() or bullet[0] < 0 or bullet[0] > screen.get_width():
                     self.bullets.remove(bullet)
-                
+
             # Check shoot timer and interval
             elapsed_time = pygame.time.get_ticks() - self.last_shot_time
             self.shoot_timer += elapsed_time
             self.last_shot_time = pygame.time.get_ticks()
 
-
             if self.shoot_timer >= self.shoot_interval:
                 self.shoot_timer = 0
+<<<<<<< HEAD
                 if self.attack_mode == 'normal':
                     self.shoot_normal()
                 elif self.attack_mode == 'scatter':
@@ -114,13 +120,18 @@ def run_game(screen):
                 # Switch attack mode randomly
                 self.attack_mode = random.choice(['normal', 'scatter'])
 
+=======
+                self.attack_patterns[self.current_pattern]()
+                self.current_pattern = (self.current_pattern + 1) % len(self.attack_patterns)
+>>>>>>> refs/remotes/origin/main
 
         def draw(self, screen):
             screen.blit(self.image, self.rect.topleft)
             # Draw boss bullets
             for bullet in self.bullets:
-                pygame.draw.circle(screen, (255, 0, 0), (bullet[0], bullet[1]), 5)
+                pygame.draw.circle(screen, (255, 0, 0), (int(bullet[0]), int(bullet[1])), 5)
 
+<<<<<<< HEAD
         def shoot_normal(self):
             num_bullets = random.randint(1, 3)
             for _ in range(num_bullets):
@@ -136,6 +147,36 @@ def run_game(screen):
                 bullet_speed = [self.bullet_speed * math.cos(angle), self.bullet_speed * math.sin(angle)]
                 self.bullets.append([bullet_pos, bullet_speed])
         
+=======
+        def shoot_straight(self):
+            for i in range(8):
+                bullet_pos = [self.rect.x + self.rect.width // 2 + i * 10 - 40, self.rect.y + self.rect.height]
+                self.bullets.append([bullet_pos[0], bullet_pos[1], self.bullet_speed, 0])
+
+        def shoot_spread(self):
+            for i in range(8):
+                bullet_pos = [self.rect.x + self.rect.width // 2, self.rect.y + self.rect.height]
+                angle = -45 + i * 10
+                speed_x = self.bullet_speed * math.sin(math.radians(angle))
+                speed_y = self.bullet_speed * math.cos(math.radians(angle))
+                self.bullets.append([bullet_pos[0], bullet_pos[1], speed_y, speed_x])
+
+        def shoot_diagonal(self):
+            angles = [45, 30, -30, -45]
+            for angle in angles:
+                bullet_pos = [self.rect.x + self.rect.width // 2, self.rect.y + self.rect.height]
+                speed_x = self.bullet_speed * math.sin(math.radians(angle))
+                speed_y = self.bullet_speed * math.cos(math.radians(angle))
+                self.bullets.append([bullet_pos[0], bullet_pos[1], speed_y, speed_x])
+
+        def shoot_homing(self):
+            bullet_pos = [self.rect.x + self.rect.width // 2, self.rect.y + self.rect.height]
+            player_pos = [rect_x + rect_width // 2, rect_y + rect_height // 2]
+            angle = math.atan2(player_pos[1] - bullet_pos[1], player_pos[0] - bullet_pos[0])
+            speed_x = self.bullet_speed * math.cos(angle)
+            speed_y = self.bullet_speed * math.sin(angle)
+            self.bullets.append([bullet_pos[0], bullet_pos[1], speed_y, speed_x])
+>>>>>>> refs/remotes/origin/main
 
     # Score, Level, and Life variables
     score = 0
@@ -158,7 +199,8 @@ def run_game(screen):
 
     # Game loop
     running = True
-    boss = None  
+    boss = None
+    boss_spawn_time = None
     while running:
         keys = pygame.key.get_pressed()
         for event in pygame.event.get():
@@ -233,17 +275,18 @@ def run_game(screen):
                         level += 1
                     hit_sound.play()
 
-
-         # Check for player-enemy collisions
+        # Check for player-enemy collisions
         player_rect = pygame.Rect(rect_x, rect_y, rect_width, rect_height)
         for enemy in enemies:
             enemy_rect = pygame.Rect(enemy[0], enemy[1], rect_width, rect_height)
             if player_rect.colliderect(enemy_rect):
-                lives = 1
+                lives -= 1
+                enemies.remove(enemy)
 
         # Spawn boss at level 5
         if level == 2 and boss is None:
             boss = Boss(boss_image)
+            boss_spawn_time = pygame.time.get_ticks()
 
         # Update and draw boss if present
         if boss:
@@ -259,9 +302,17 @@ def run_game(screen):
                     hit_sound.play()
                     if boss.health <= 0:
                         boss = None
-                        score += 500  # Reward for defeating boss  
-            if boss:
-                boss.shoot()            
+                        score += 500  # Reward for defeating boss
+
+            # Check for player-boss bullet collisions
+            for bullet in boss.bullets:
+                if player_rect.collidepoint((bullet[0], bullet[1])):
+                    boss.bullets.remove(bullet)
+                    lives -= 1
+
+            # Remove boss after 15 seconds
+            if pygame.time.get_ticks() - boss_spawn_time > boss.attack_duration:
+                boss = None
 
         # Display Score and Level
         score_text = font.render(f'Score: {score}', True, (255, 255, 255))
