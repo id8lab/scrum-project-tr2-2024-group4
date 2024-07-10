@@ -75,13 +75,6 @@ def run_game(screen):
             self.bullets = []
             self.bullet_speed = 8  # Adjust bullet speed as needed
             self.last_shot_time = pygame.time.get_ticks()
-<<<<<<< HEAD
-            self.shoot_interval = 5000  # Adjust shoot interval as needed
-            self.shoot_timer = 0
-            self.move_speed = move_speed  # Boss movement speed
-            self.attack_mode = 'normal'  # Start with normal attack mode
-           
-=======
             self.shoot_interval = 1000  # Adjust shoot interval to 1 second
             self.shoot_timer = 0
             self.move_speed = move_speed  # Boss movement speed
@@ -89,7 +82,6 @@ def run_game(screen):
             self.attack_duration = 15000  # Boss appears for 15 seconds
             self.attack_patterns = [self.shoot_straight, self.shoot_spread, self.shoot_diagonal, self.shoot_homing]
             self.current_pattern = 0
->>>>>>> refs/remotes/origin/main
 
         def update(self):
             # Boss behavior here (e.g., move left and right)
@@ -111,19 +103,8 @@ def run_game(screen):
 
             if self.shoot_timer >= self.shoot_interval:
                 self.shoot_timer = 0
-<<<<<<< HEAD
-                if self.attack_mode == 'normal':
-                    self.shoot_normal()
-                elif self.attack_mode == 'scatter':
-                    self.shoot_scatter()
-
-                # Switch attack mode randomly
-                self.attack_mode = random.choice(['normal', 'scatter'])
-
-=======
                 self.attack_patterns[self.current_pattern]()
                 self.current_pattern = (self.current_pattern + 1) % len(self.attack_patterns)
->>>>>>> refs/remotes/origin/main
 
         def draw(self, screen):
             screen.blit(self.image, self.rect.topleft)
@@ -131,23 +112,6 @@ def run_game(screen):
             for bullet in self.bullets:
                 pygame.draw.circle(screen, (255, 0, 0), (int(bullet[0]), int(bullet[1])), 5)
 
-<<<<<<< HEAD
-        def shoot_normal(self):
-            num_bullets = random.randint(1, 3)
-            for _ in range(num_bullets):
-                bullet_pos = [self.rect.x + self.rect.width // 2, self.rect.y + self.rect.height]
-                self.bullets.append(bullet_pos)
-
-        def shoot_scatter(self):
-            num_bullets = 5
-            for i in range(num_bullets):
-                angle = random.uniform(-0.5, 0.5)  # Random angle for scatter effect
-                bullet_pos = [self.rect.x + self.rect.width // 2, self.rect.y + self.rect.height]
-                self.bullets.append(bullet_pos)
-                bullet_speed = [self.bullet_speed * math.cos(angle), self.bullet_speed * math.sin(angle)]
-                self.bullets.append([bullet_pos, bullet_speed])
-        
-=======
         def shoot_straight(self):
             for i in range(8):
                 bullet_pos = [self.rect.x + self.rect.width // 2 + i * 10 - 40, self.rect.y + self.rect.height]
@@ -176,7 +140,6 @@ def run_game(screen):
             speed_x = self.bullet_speed * math.cos(angle)
             speed_y = self.bullet_speed * math.sin(angle)
             self.bullets.append([bullet_pos[0], bullet_pos[1], speed_y, speed_x])
->>>>>>> refs/remotes/origin/main
 
     # Score, Level, and Life variables
     score = 0
@@ -284,7 +247,7 @@ def run_game(screen):
                 enemies.remove(enemy)
 
         # Spawn boss at level 5
-        if level == 2 and boss is None:
+        if level == 5 and boss is None:
             boss = Boss(boss_image)
             boss_spawn_time = pygame.time.get_ticks()
 
