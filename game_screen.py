@@ -152,13 +152,27 @@ def run_game(screen):
 
     # Enemy variables
     enemies = []
-    enemy_speed = 5
+    enemy_speed = 1  # Default enemy speed
 
     # Font for displaying text
     font = pygame.font.Font(None, 36)
 
     # Game mode
     mode = 'rectangle'  # Start with 'rectangle' mode, change to 'sprite' with 'S' key
+
+    # Function to update enemy speed based on level
+    def update_enemy_speed(level):
+        nonlocal enemy_speed
+        if level in [1, 2]:
+            enemy_speed = 1
+        elif level in [3, 4]:
+            enemy_speed = 2
+        elif level in [5, 6]:
+            enemy_speed = 3
+        elif level in [7, 8]:
+            enemy_speed = 4
+        elif level in [9, 10]:
+            enemy_speed = 5
 
     # Game loop
     running = True
@@ -211,8 +225,8 @@ def run_game(screen):
 
         # Update enemies
         if len(enemies) < 5:  # Spawn enemies if fewer than 5
-            enemy_x = random.randint(0, screen.get_width() - rect_width)  # Use random.randint
-            enemy_y = random.randint(-100, -40)  # Use random.randint
+            enemy_x = random.randint(0, screen.get_width() - rect_width)
+            enemy_y = random.randint(-100, -40)
             enemy_image = random.choice(enemy_images)
             enemies.append([enemy_x, enemy_y, enemy_image])
 
@@ -236,6 +250,7 @@ def run_game(screen):
                     score += 10
                     if score % 100 == 0:
                         level += 1
+                        update_enemy_speed(level)  # Update enemy speed when level changes
                     hit_sound.play()
 
         # Check for player-enemy collisions
