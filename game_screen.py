@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import math
 
 # Function definition
 def run_game(screen):
@@ -78,9 +79,10 @@ def run_game(screen):
             self.bullets = []
             self.bullet_speed = 5  # Adjust bullet speed as needed
             self.last_shot_time = pygame.time.get_ticks()
-            self.shoot_interval = 3000  # Adjust shoot interval as needed
+            self.shoot_interval = 5000  # Adjust shoot interval as needed
             self.shoot_timer = 0
             self.move_speed = move_speed  # Boss movement speed
+            self.attack_mode = 'normal'  # Start with normal attack mode
            
 
         def update(self):
@@ -104,9 +106,13 @@ def run_game(screen):
 
             if self.shoot_timer >= self.shoot_interval:
                 self.shoot_timer = 0
-                num_bullets = random.randint(5, 8)
-                for _ in range(num_bullets):
-                    self.shoot()
+                if self.attack_mode == 'normal':
+                    self.shoot_normal()
+                elif self.attack_mode == 'scatter':
+                    self.shoot_scatter()
+
+                # Switch attack mode randomly
+                self.attack_mode = random.choice(['normal', 'scatter'])
 
 
         def draw(self, screen):
@@ -115,9 +121,20 @@ def run_game(screen):
             for bullet in self.bullets:
                 pygame.draw.circle(screen, (255, 0, 0), (bullet[0], bullet[1]), 5)
 
-        def shoot(self):
-            bullet_pos = [self.rect.x + self.rect.width // 2, self.rect.y + self.rect.height]
-            self.bullets.append(bullet_pos)
+        def shoot_normal(self):
+            num_bullets = random.randint(1, 3)
+            for _ in range(num_bullets):
+                bullet_pos = [self.rect.x + self.rect.width // 2, self.rect.y + self.rect.height]
+                self.bullets.append(bullet_pos)
+
+        def shoot_scatter(self):
+            num_bullets = 5
+            for i in range(num_bullets):
+                angle = random.uniform(-0.5, 0.5)  # Random angle for scatter effect
+                bullet_pos = [self.rect.x + self.rect.width // 2, self.rect.y + self.rect.height]
+                self.bullets.append(bullet_pos)
+                bullet_speed = [self.bullet_speed * math.cos(angle), self.bullet_speed * math.sin(angle)]
+                self.bullets.append([bullet_pos, bullet_speed])
         
 
     # Score, Level, and Life variables
