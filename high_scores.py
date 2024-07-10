@@ -1,5 +1,6 @@
 import pygame
 import json
+import os
 
 def high_scores(screen):
     print("Displaying high scores...")  
@@ -10,14 +11,18 @@ def high_scores(screen):
     font = pygame.font.Font(None, 74)
     small_font = pygame.font.Font(None, 36)
 
+    # File paths
+    scores_file = 'high_scores.json'
+
     # Load high scores from a JSON file
     try:
-        with open('high_scores.json', 'r') as f:
-            high_scores_data = json.load(f)
-        print(f"Loaded high scores: {high_scores_data}")  
-    except FileNotFoundError:
-        print("Error: 'high_scores.json' file not found. Creating a new one.")
-        high_scores_data = []
+        if os.path.exists(scores_file):
+            with open(scores_file, 'r') as f:
+                high_scores_data = json.load(f)
+            print(f"Loaded high scores: {high_scores_data}")
+        else:
+            print(f"File '{scores_file}' not found. Creating a new one.")
+            high_scores_data = []
     except json.JSONDecodeError as e:
         print(f"Error decoding JSON: {e}")
         high_scores_data = []
@@ -51,3 +56,9 @@ def high_scores(screen):
 
     # Return to main menu
     return
+if __name__ == "__main__":
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    high_scores(screen)
+    pygame.quit()
+   

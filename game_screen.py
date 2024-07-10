@@ -9,10 +9,7 @@ def run_game(screen):
     rect_x, rect_y = 50, 50
     rect_width, rect_height = 100, 100
     rect_speed = 5
-    sprite_frames = []  # List of surfaces representing different frames
-    player_pos = (350, 450)
-    current_frame = 0
-    frame_count = 0
+    
 
     # Load enemy images
     try:
@@ -167,52 +164,6 @@ def run_game(screen):
                     if score % 100 == 0:
                         level += 1
                     hit_sound.play()
-
-        # Check for level 10 and spawn boss
-        if level == 10 and boss is None:
-            enemies.clear()  # Clear all existing enemies
-            boss = [screen.get_width() // 2 - 100, -200]  # Start position of the boss
-
-        # Update boss position
-        if boss is not None:
-            if boss[1] < 50:  # Move boss down until it reaches y = 50
-                boss[1] += boss_speed
-            screen.blit(boss_image, (boss[0], boss[1]))
-
-            # Boss attack pattern
-            if random.randint(0, 50) == 0:  # Randomly fire bullets
-                boss_bullet_pos = [boss[0] + boss_image.get_width() // 2, boss[1] + boss_image.get_height()]
-                boss_attacks.append(boss_bullet_pos)
-
-            # Update boss bullets
-            for attack in boss_attacks:
-                attack[1] += -bullet_speed
-                if attack[1] > screen.get_height():
-                    boss_attacks.remove(attack)
-
-            # Draw boss bullets
-            for attack in boss_attacks:
-                pygame.draw.circle(screen, (255, 0, 0), attack, 5)
-
-            # Check for collisions between player and boss bullets
-            for attack in boss_attacks:
-                if (rect_x < attack[0] < rect_x + rect_width and
-                        rect_y < attack[1] < rect_y + rect_height):
-                    boss_attacks.remove(attack)
-                    lives -= 1
-
-            # Check for collisions between player bullets and boss
-            for bullet in bullets:
-                if (boss[0] < bullet[0] < boss[0] + boss_image.get_width() and
-                        boss[1] < bullet[1] < boss[1] + boss_image.get_height()):
-                    bullets.remove(bullet)
-                    boss_health -= 1
-
-            # Check for boss defeat
-            if boss_health <= 0:
-                boss = None
-                level += 1
-                boss_attacks.clear()
 
         # Display Score and Level
         score_text = font.render(f'Score: {score}', True, (255, 255, 255))
