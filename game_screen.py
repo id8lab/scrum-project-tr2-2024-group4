@@ -2,6 +2,43 @@ import pygame
 import sys
 import random
 import math
+import json
+import os
+# Function to get text input from player
+def get_text_input(screen, prompt, position):
+    font = pygame.font.Font(None, 32)
+    input_box = pygame.Rect(position[0], position[1], 140, 32)
+    color_inactive = pygame.Color('lightskyblue3')
+    color_active = pygame.Color('dodgerblue2')
+    color = color_inactive
+    active = True  # 开始时输入框为活跃状态
+    text = ''
+    done = False
+
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                active = input_box.collidepoint(event.pos)
+                color = color_active if active else color_inactive
+            if event.type == pygame.KEYDOWN:
+                if active:
+                    if event.key == pygame.K_RETURN:
+                        done = True  # 按下 Enter 键结束输入
+                    elif event.key == pygame.K_BACKSPACE:
+                        text = text[:-1]
+                    else:
+                        text += event.unicode
+
+        screen.fill((30, 30, 30))
+        pygame.draw.rect(screen, color, input_box, 2)
+        text_surface = font.render(prompt + text, True, (255, 255, 255))
+        screen.blit(text_surface, (input_box.x + 5, input_box.y + 5))
+        pygame.display.flip()
+
+    return text
+
 
 # Function definition
 def run_game(screen):
@@ -299,6 +336,7 @@ def run_game(screen):
         screen.blit(score_text, (10, 10))
         screen.blit(level_text, (10, 50))
 
+
         # Display Lives as hearts
         for i in range(lives):
             screen.blit(heart_image, (screen.get_width() - (i + 1) * 40, screen.get_height() - 40))
@@ -308,8 +346,16 @@ def run_game(screen):
             game_over_text = font.render('Game Over', True, (255, 0, 0))
             screen.blit(game_over_text, (screen.get_width() // 2 - 100, screen.get_height() // 2 - 20))
             pygame.display.flip()
-            pygame.time.wait(2000)  # Wait for 2 seconds before quitting
-            running = False
+
+            input_box_pos = (screen.get_width() // 2 - 100, screen.get_height() // 2 + 20)
+            player_name = get_text_input(screen, "Enter your name: ", input_box_pos)
+
+            final_score = score
+            save_score_to_json(player_name, final_score)
+
+            running = False  # Exit the game loop
+          
+         
 
         # Update the display
         pygame.display.flip()
@@ -317,13 +363,30 @@ def run_game(screen):
         # Frame rate
         pygame.time.Clock().tick(60)
 
-    return  # Ensure a clean exit
+    return final_score  # Return score when game ends
+
+
+
+def save_score_to_json(player_name, final_score):
+    scores = []
+    json_file = 'scores.json'
+
+    # Check if file exists and is not empty
+    if os.path.exists(json_file) and os.path.getsize(json_file) > 0:
+        with open(json_file, 'r') as f:
+            scores = json.load(f)
+
+    scores.append({'name': player_name, 'score': final_score})
+
+    with open(json_file, 'w') as f:
+        json.dump(scores, f, indent=4)
+
 
 # Main code to run the game
 if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
     pygame.display.set_caption("Galaga Arcade 64")
-    run_game(screen)
+    final_score = run_game(screen)
+    print(f"Final Score: {final_score}")
     pygame.quit()
-    sys.exit()
