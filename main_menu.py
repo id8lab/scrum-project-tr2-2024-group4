@@ -17,7 +17,7 @@ screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE
 pygame.display.set_caption("Main Menu")
 
 # Load the video
-cap = cv2.VideoCapture('Background.mp4')
+cap = cv2.VideoCapture('music/Background.mp4')
 
 # Define colors
 WHITE = (255, 255, 255)
