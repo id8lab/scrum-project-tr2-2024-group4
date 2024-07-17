@@ -46,7 +46,7 @@ def run_game(screen):
     # Game variables
     rect_width, rect_height = 100, 100
     rect_speed = 5
-    
+
     # Load enemy images
     try:
         enemy_images = [pygame.image.load('images/enemy1.png'), pygame.image.load('images/enemy2.png')]
@@ -91,24 +91,27 @@ def run_game(screen):
         print(f"Failed to load heart image: {e}")
         sys.exit()
 
-    # Load boss image
+    # Load boss images
     try:
-        boss_image = pygame.image.load('images/boss2.png')
-        boss_image = pygame.transform.scale(boss_image, (rect_width * 2, rect_height * 2))  # Boss is larger
-        print("Boss image loaded successfully")
+        boss1_image = pygame.image.load('images/boss1.png')
+        boss1_image = pygame.transform.scale(boss1_image, (rect_width * 2, rect_height * 2))  # Boss is larger
+        boss2_image = pygame.image.load('images/boss2.png')
+        boss2_image = pygame.transform.scale(boss2_image, (rect_width * 2, rect_height * 2))  # Boss is larger
+        print("Boss images loaded successfully")
     except pygame.error as e:
-        print(f"Failed to load boss image: {e}")
+        print(f"Failed to load boss images: {e}")
         sys.exit()
 
     # Boss class
     class Boss(pygame.sprite.Sprite):
-        def __init__(self, image, move_speed=20):
+        def __init__(self, image, health, move_speed=20, duration=None):
             super().__init__()
             self.image = image
             self.rect = self.image.get_rect()
             self.rect.x = screen.get_width() // 2 - self.rect.width // 2
             self.rect.y = 50
-            self.health = 100
+            self.health = health
+            self.max_health = health  # To display the health bar
             self.bullets = []
             self.bullet_speed = 8  # Adjust bullet speed as needed
             self.last_shot_time = pygame.time.get_ticks()
@@ -116,7 +119,7 @@ def run_game(screen):
             self.shoot_timer = 0
             self.move_speed = move_speed  # Boss movement speed
             self.attack_start_time = pygame.time.get_ticks()
-            self.attack_duration = 15000  # Boss appears for 15 seconds
+            self.attack_duration = duration  # Boss appears for duration milliseconds (None means until defeated)
             self.attack_patterns = [self.shoot_straight, self.shoot_spread, self.shoot_diagonal, self.shoot_homing]
             self.current_pattern = 0
 
@@ -127,11 +130,10 @@ def run_game(screen):
                 self.rect.x -= random.choice([-self.move_speed, self.move_speed])
 
             # Update boss bullets
+            self.bullets = [bullet for bullet in self.bullets if bullet[1] <= screen.get_height() and 0 <= bullet[0] <= screen.get_width()]
             for bullet in self.bullets:
                 bullet[1] += bullet[2]  # bullet[2] contains bullet speed in y direction
                 bullet[0] += bullet[3]  # bullet[3] contains bullet speed in x direction
-                if bullet[1] > screen.get_height() or bullet[0] < 0 or bullet[0] > screen.get_width():
-                    self.bullets.remove(bullet)
 
             # Check shoot timer and interval
             elapsed_time = pygame.time.get_ticks() - self.last_shot_time
@@ -150,14 +152,14 @@ def run_game(screen):
                 pygame.draw.circle(screen, (255, 0, 0), (int(bullet[0]), int(bullet[1])), 5)
 
         def shoot_straight(self):
-            for i in range(8):
-                bullet_pos = [self.rect.x + self.rect.width // 2 + i * 10 - 40, self.rect.y + self.rect.height]
+            for i in range(16):  # Increase the number of bullets
+                bullet_pos = [self.rect.x + self.rect.width // 2 + i * 10 - 80, self.rect.y + self.rect.height]
                 self.bullets.append([bullet_pos[0], bullet_pos[1], self.bullet_speed, 0])
 
         def shoot_spread(self):
-            for i in range(8):
+            for i in range(16):  # Increase the number of bullets
                 bullet_pos = [self.rect.x + self.rect.width // 2, self.rect.y + self.rect.height]
-                angle = -45 + i * 10
+                angle = -75 + i * 10
                 speed_x = self.bullet_speed * math.sin(math.radians(angle))
                 speed_y = self.bullet_speed * math.cos(math.radians(angle))
                 self.bullets.append([bullet_pos[0], bullet_pos[1], speed_y, speed_x])
@@ -178,6 +180,16 @@ def run_game(screen):
             speed_y = self.bullet_speed * math.sin(angle)
             self.bullets.append([bullet_pos[0], bullet_pos[1], speed_y, speed_x])
 
+        def draw_health_bar(self, screen):
+            # Draw the health bar at the top of the screen
+            bar_width = 400
+            bar_height = 20
+            fill_width = (self.health / self.max_health) * bar_width
+            border_color = (255, 255, 255)
+            fill_color = (255, 0, 0)
+            pygame.draw.rect(screen, border_color, (screen.get_width() // 2 - bar_width // 2, 10, bar_width, bar_height), 2)
+            pygame.draw.rect(screen, fill_color, (screen.get_width() // 2 - bar_width // 2, 10, fill_width, bar_height))
+
     # Score, Level, and Life variables
     score = 0
     level = 1
@@ -189,32 +201,21 @@ def run_game(screen):
 
     # Enemy variables
     enemies = []
-    enemy_speed = 1  # Default enemy speed
+    enemy_speed = 1
 
     # Font for displaying text
     font = pygame.font.Font(None, 36)
+    win_font = pygame.font.Font(None, 72)  # Font for the "YOU WIN" message
 
     # Game mode
     mode = 'rectangle'  # Start with 'rectangle' mode, change to 'sprite' with 'S' key
-
-    # Function to update enemy speed based on level
-    def update_enemy_speed(level):
-        nonlocal enemy_speed
-        if level in [1, 2]:
-            enemy_speed = 1
-        elif level in [3, 4]:
-            enemy_speed = 2
-        elif level in [5, 6]:
-            enemy_speed = 3
-        elif level in [7, 8]:
-            enemy_speed = 4
-        elif level in [9, 10]:
-            enemy_speed = 5
 
     # Game loop
     running = True
     boss = None
     boss_spawn_time = None
+    game_won = False  # Track if the game is won
+    rect_x, rect_y = 50, 50  # Initialize player position
     while running:
         keys = pygame.key.get_pressed()
         for event in pygame.event.get():
@@ -251,83 +252,131 @@ def run_game(screen):
         screen.blit(flight_image, (rect_x, rect_y))
 
         # Update bullets
+        bullets = [bullet for bullet in bullets if bullet[1] > 0]
         for bullet in bullets:
             bullet[1] += bullet_speed
-            if bullet[1] < 0:
-                bullets.remove(bullet)
 
         # Draw bullets
         for bullet in bullets:
             pygame.draw.circle(screen, (255, 255, 255), bullet, 5)
 
         # Update enemies
-        if len(enemies) < 5:  # Spawn enemies if fewer than 5
-            enemy_x = random.randint(0, screen.get_width() - rect_width)
-            enemy_y = random.randint(-100, -40)
+        if len(enemies) < 5 and (boss is None or boss.health <= 0):  # Spawn enemies if fewer than 5 and no boss present or boss defeated
+            enemy_x = random.randint(0, screen.get_width() - rect_width)  # Use random.randint
+            enemy_y = random.randint(-100, -40)  # Use random.randint
             enemy_image = random.choice(enemy_images)
             enemies.append([enemy_x, enemy_y, enemy_image])
 
+        enemies = [enemy for enemy in enemies if enemy[1] <= screen.get_height()]
         for enemy in enemies:
             enemy[1] += enemy_speed
-            if enemy[1] > screen.get_height():
-                enemies.remove(enemy)
-                lives -= 1
 
         # Draw enemies
         for enemy in enemies:
             screen.blit(enemy[2], (enemy[0], enemy[1]))
 
         # Check for collisions
+        bullets_to_remove = []
+        enemies_to_remove = []
         for bullet in bullets:
             for enemy in enemies:
                 if (enemy[0] < bullet[0] < enemy[0] + rect_width and
                         enemy[1] < bullet[1] < enemy[1] + rect_height):
-                    bullets.remove(bullet)
-                    enemies.remove(enemy)
+                    bullets_to_remove.append(bullet)
+                    enemies_to_remove.append(enemy)
                     score += 10
                     if score % 100 == 0:
                         level += 1
-                        update_enemy_speed(level)  # Update enemy speed when level changes
+                        lives += 2  # Restore 2 lives on each level up
                     hit_sound.play()
+
+        for bullet in bullets_to_remove:
+            if bullet in bullets:
+                bullets.remove(bullet)
+        for enemy in enemies_to_remove:
+            if enemy in enemies:
+                enemies.remove(enemy)
 
         # Check for player-enemy collisions
         player_rect = pygame.Rect(rect_x, rect_y, rect_width, rect_height)
+        enemies_to_remove = []
         for enemy in enemies:
             enemy_rect = pygame.Rect(enemy[0], enemy[1], rect_width, rect_height)
             if player_rect.colliderect(enemy_rect):
                 lives -= 1
+                enemies_to_remove.append(enemy)
+
+        for enemy in enemies_to_remove:
+            if enemy in enemies:
                 enemies.remove(enemy)
 
-        # Spawn boss at level 5
+        # Adjust enemy speed based on level
+        if level <= 2:
+            enemy_speed = 1
+        elif level <= 4:
+            enemy_speed = 2
+        elif level <= 6:
+            enemy_speed = 3
+        elif level <= 8:
+            enemy_speed = 4
+        else:
+            enemy_speed = 5
+
+        # Spawn boss at level 5 and 10
         if level == 5 and boss is None:
-            boss = Boss(boss_image)
+            boss = Boss(boss2_image, health=100, duration=15000)  # Boss2 for 15 seconds
             boss_spawn_time = pygame.time.get_ticks()
+            # Add a few enemies when Boss2 appears
+            for _ in range(3):
+                enemy_x = random.randint(0, screen.get_width() - rect_width)
+                enemy_y = random.randint(-100, -40)
+                enemy_image = random.choice(enemy_images)
+                enemies.append([enemy_x, enemy_y, enemy_image])
+        elif level == 10 and boss is None:
+            boss = Boss(boss1_image, health=800)  # Boss1 appears, 80 hits required (health = 800)
+            boss_spawn_time = pygame.time.get_ticks()
+            enemies.clear()  # Clear all enemies
 
         # Update and draw boss if present
         if boss:
             boss.update()
             boss.draw(screen)
+            if level == 10:
+                boss.draw_health_bar(screen)  # Draw boss1 health bar only
 
             # Check for bullet-boss collisions
-            boss_rect = boss.rect
+            bullets_to_remove = []
             for bullet in bullets:
-                if boss_rect.collidepoint(bullet):
-                    bullets.remove(bullet)
+                if boss and boss.rect.collidepoint(bullet):
+                    bullets_to_remove.append(bullet)
                     boss.health -= 10
                     hit_sound.play()
                     if boss.health <= 0:
                         boss = None
                         score += 500  # Reward for defeating boss
+                        if level == 10:
+                            game_won = True
+
+            for bullet in bullets_to_remove:
+                if bullet in bullets:
+                    bullets.remove(bullet)
 
             # Check for player-boss bullet collisions
-            for bullet in boss.bullets:
-                if player_rect.collidepoint((bullet[0], bullet[1])):
-                    boss.bullets.remove(bullet)
-                    lives -= 1
+            bullets_to_remove = []
+            if boss:
+                for bullet in boss.bullets:
+                    if player_rect.collidepoint((bullet[0], bullet[1])):
+                        bullets_to_remove.append(bullet)
+                        lives -= 1
 
-            # Remove boss after 15 seconds
-            if pygame.time.get_ticks() - boss_spawn_time > boss.attack_duration:
+                for bullet in bullets_to_remove:
+                    if bullet in boss.bullets:
+                        boss.bullets.remove(bullet)
+
+            # Remove boss2 after its duration
+            if boss and boss.attack_duration and level == 5 and pygame.time.get_ticks() - boss_spawn_time > boss.attack_duration:
                 boss = None
+                level = 6  # Move to the next level after boss2
 
         # Display Score and Level
         score_text = font.render(f'Score: {score}', True, (255, 255, 255))
@@ -356,6 +405,14 @@ def run_game(screen):
             running = False  # Exit the game loop
           
          
+
+        # Check for game won
+        if game_won:
+            you_win_text = win_font.render('YOU WIN', True, (255, 0, 0))  # Larger and red "YOU WIN" text
+            screen.blit(you_win_text, (screen.get_width() // 2 - 100, screen.get_height() // 2 - 50))
+            pygame.display.flip()
+            pygame.time.wait(2000)  # Wait for 2 seconds before quitting
+            running = False
 
         # Update the display
         pygame.display.flip()
