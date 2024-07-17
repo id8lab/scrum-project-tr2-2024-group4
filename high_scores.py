@@ -1,16 +1,50 @@
+import os
 import pygame
 import json
-import os
 
 def high_scores(screen):
-    print("Displaying high scores...")
+    print("Displaying high scores...")  
 
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
-    scores_file = 'high_scores.json'
+    BRIGHT_COLOR = (255, 0, 0)  # Use a bright red color for the title
 
-    font = pygame.font.Font(None, 74)
+    # Load custom font for the title
+    try:
+        title_font = pygame.font.Font(os.path.join('fonts', 'custom_font.ttf'), 100)  # Adjust the font size as needed
+    except FileNotFoundError:
+        print("Custom font not found. Falling back to default font.")
+        title_font = pygame.font.Font(None, 100)  # Use a default font if custom font is not found
+
     small_font = pygame.font.Font(None, 36)
+
+    # Load background image
+    try:
+        background = pygame.image.load(os.path.join('images', 'background.png'))
+        background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
+        print("Background image loaded successfully")
+    except pygame.error as e:
+        print(f"Failed to load background image: {e}")
+        background = None  # Use a default color if the background image is not found
+
+    # File paths
+    scores_file = 'scores.json'
+
+    # Load high scores from a JSON file
+    try:
+        if os.path.exists(scores_file):
+            with open(scores_file, 'r') as f:
+                high_scores_data = json.load(f)
+            print(f"Loaded high scores: {high_scores_data}")
+        else:
+            print(f"File '{scores_file}' not found. Creating a new one.")
+            high_scores_data = []
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON: {e}")
+        high_scores_data = []
+
+    # Sort high scores by score in descending order
+    high_scores_data.sort(key=lambda x: x['score'], reverse=True)
 
     running = True
     while running:
@@ -21,29 +55,47 @@ def high_scores(screen):
                 if event.key == pygame.K_ESCAPE:
                     running = False
 
-        screen.fill(WHITE)
-        title_text = font.render("High Scores", True, BLACK)
+        if background:
+            screen.blit(background, (0, 0))
+        else:
+            screen.fill(WHITE)
+
+        # Title
+        title_text = title_font.render("High Scores", True, BRIGHT_COLOR)
         screen.blit(title_text, (screen.get_width() // 2 - title_text.get_width() // 2, 50))
 
-        # Check if the file exists and is not empty before attempting to load
-        if os.path.exists(scores_file) and os.path.getsize(scores_file) > 0:
+        # Determine maximum width of score texts
+        max_width = 0
+        for score_entry in high_scores_data[:10]:
             try:
-                with open(scores_file, 'r') as f:
-                    high_scores_data = json.load(f)
-                print(f"Loaded high scores: {high_scores_data}")
+                score_text = f"{score_entry['name']} : {score_entry['score']}"  # Add space around colon for better readability
+                text_width, _ = small_font.size(score_text)
+                if text_width > max_width:
+                    max_width = text_width
+            except KeyError as e:
+                print(f"Error: Missing key {e} in score entry {score_entry}")
 
-                y_offset = 150
-                for score_entry in sorted(high_scores_data, key=lambda x: x['score'], reverse=True):
-                    score_text = small_font.render(f"{score_entry['name']}: {score_entry['score']}", True, BLACK)
-                    screen.blit(score_text, (screen.get_width() // 2 - score_text.get_width() // 2, y_offset))
-                    y_offset += 50
-            except json.JSONDecodeError as e:
-                print(f"Error decoding JSON: {e}")
-        else:
-            print("No scores available or file is empty.")
-            no_scores_text = small_font.render("No scores available.", True, BLACK)
-            screen.blit(no_scores_text, (screen.get_width() // 2 - no_scores_text.get_width() // 2, 150))
+        # Calculate initial y_offset to vertically center the text block
+        total_height = (small_font.get_height() + 10) * len(high_scores_data[:10])
+        y_offset = (screen.get_height() - total_height) // 2 + 100  # Adjust the y_offset to move text block down
+
+        # Display high scores
+        for rank, score_entry in enumerate(high_scores_data[:10], start=1):
+            try:
+                score_text = f"{rank}. {score_entry['name']} : {score_entry['score']}"  # Add space around colon for better readability
+                score_text_rendered = small_font.render(score_text, True, BLACK)
+                screen.blit(score_text_rendered, (screen.get_width() // 2 - score_text_rendered.get_width() // 2, y_offset))
+                y_offset += score_text_rendered.get_height() + 10  # Adjust vertical spacing here
+            except KeyError as e:
+                print(f"Error: Missing key {e} in score entry {score_entry}")
 
         pygame.display.flip()
 
+    # Return to main menu
     return
+
+if __name__ == "__main__":
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    high_scores(screen)
+    pygame.quit()
