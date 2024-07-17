@@ -3,7 +3,7 @@ import json
 import os
 
 def high_scores(screen):
-    print("Displaying high scores...")  
+    print("Displaying high scores")  
 
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
