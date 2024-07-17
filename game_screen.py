@@ -11,7 +11,7 @@ def get_text_input(screen, prompt, position):
     color_inactive = pygame.Color('lightskyblue3')
     color_active = pygame.Color('dodgerblue2')
     color = color_inactive
-    active = True  # 开始时输入框为活跃状态
+    active = True  # start input condition is active
     text = ''
     done = False
 
@@ -25,7 +25,7 @@ def get_text_input(screen, prompt, position):
             if event.type == pygame.KEYDOWN:
                 if active:
                     if event.key == pygame.K_RETURN:
-                        done = True  # 按下 Enter 键结束输入
+                        done = True  # press enter key is end
                     elif event.key == pygame.K_BACKSPACE:
                         text = text[:-1]
                     else:
