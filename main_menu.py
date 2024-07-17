@@ -1,9 +1,11 @@
-import pygame  #import pygame
+import pygame
 import sys
 import cv2
+import json
+import os
 from game_screen import run_game
-from setting_screen import setting
 from high_scores import high_scores
+
 
 # Pygame initialization
 pygame.init()
@@ -22,6 +24,20 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREY = (200, 200, 200)
 
+# Score saving function
+def save_score(name, score, file_path='high_scores.json'):
+    scores = []
+    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+        with open(file_path, 'r') as file:
+            scores = json.load(file)
+
+    scores.append({'name': name, 'score': score})
+    scores = sorted(scores, key=lambda x: x['score'], reverse=True)[:10]
+
+    with open(file_path, 'w') as file:
+        json.dump(scores, file)
+    print("Score saved successfully.")
+
 # Function to draw the main menu
 def draw_main_menu():
     ret, frame = cap.read()
@@ -33,7 +49,6 @@ def draw_main_menu():
     frame = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
     screen.blit(frame, (0, 0))
 
-    # Dynamic font sizes based on screen dimensions
     title_font_size = max(50, min(100, min(screen_width, screen_height) // 6))
     title_font = pygame.font.Font(None, title_font_size)
     title = title_font.render("Main Menu", True, BLACK)
@@ -54,7 +69,6 @@ def draw_main_menu():
         button_text = button_font.render(text, True, BLACK)
         screen.blit(button_text, (x - button_text.get_width() // 2, y - button_text.get_height() // 2))
 
-# Function to check button clicks
 def check_button_click(position):
     buttons = {
         "Start Game": (screen_width // 2, screen_height // 2 - 100),
@@ -77,7 +91,7 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             button_clicked = check_button_click(event.pos)
             if button_clicked == "Start Game":
-                run_game(screen)
+                run_game(screen)  # Make sure to save scores within run_game
             elif button_clicked == "Settings":
                 setting(screen)
             elif button_clicked == "High Scores":
