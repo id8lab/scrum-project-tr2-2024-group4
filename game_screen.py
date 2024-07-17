@@ -115,14 +115,14 @@ def run_game(screen):
                 pygame.draw.circle(screen, (255, 0, 0), (int(bullet[0]), int(bullet[1])), 5)
 
         def shoot_straight(self):
-            for i in range(12):  # Increase the number of bullets
-                bullet_pos = [self.rect.x + self.rect.width // 2 + i * 10 - 50, self.rect.y + self.rect.height]
+            for i in range(16):  # Increase the number of bullets
+                bullet_pos = [self.rect.x + self.rect.width // 2 + i * 10 - 80, self.rect.y + self.rect.height]
                 self.bullets.append([bullet_pos[0], bullet_pos[1], self.bullet_speed, 0])
 
         def shoot_spread(self):
-            for i in range(12):  # Increase the number of bullets
+            for i in range(16):  # Increase the number of bullets
                 bullet_pos = [self.rect.x + self.rect.width // 2, self.rect.y + self.rect.height]
-                angle = -60 + i * 10
+                angle = -75 + i * 10
                 speed_x = self.bullet_speed * math.sin(math.radians(angle))
                 speed_y = self.bullet_speed * math.cos(math.radians(angle))
                 self.bullets.append([bullet_pos[0], bullet_pos[1], speed_y, speed_x])
@@ -224,7 +224,7 @@ def run_game(screen):
             pygame.draw.circle(screen, (255, 255, 255), bullet, 5)
 
         # Update enemies
-        if len(enemies) < 5 and boss is None:  # Spawn enemies if fewer than 5 and no boss present
+        if len(enemies) < 5 and (boss is None or boss.health <= 0):  # Spawn enemies if fewer than 5 and no boss present or boss defeated
             enemy_x = random.randint(0, screen.get_width() - rect_width)  # Use random.randint
             enemy_y = random.randint(-100, -40)  # Use random.randint
             enemy_image = random.choice(enemy_images)
@@ -289,8 +289,14 @@ def run_game(screen):
         if level == 5 and boss is None:
             boss = Boss(boss2_image, health=100, duration=15000)  # Boss2 for 15 seconds
             boss_spawn_time = pygame.time.get_ticks()
+            # Add a few enemies when Boss2 appears
+            for _ in range(3):
+                enemy_x = random.randint(0, screen.get_width() - rect_width)
+                enemy_y = random.randint(-100, -40)
+                enemy_image = random.choice(enemy_images)
+                enemies.append([enemy_x, enemy_y, enemy_image])
         elif level == 10 and boss is None:
-            boss = Boss(boss1_image, health=500)  # Boss1 appears, 50 hits required
+            boss = Boss(boss1_image, health=800)  # Boss1 appears, 80 hits required (health = 800)
             boss_spawn_time = pygame.time.get_ticks()
             enemies.clear()  # Clear all enemies
 
