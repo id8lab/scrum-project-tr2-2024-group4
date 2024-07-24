@@ -1,8 +1,11 @@
-import os
 import pygame
 import json
+import os
 
 def high_scores(screen):
+<<<<<<< HEAD
+    print("Displaying high scores...")
+=======
 
     print("Displaying high scores.")  
 
@@ -11,21 +14,20 @@ def high_scores(screen):
     print("Displaying high scores")  
 
 
+>>>>>>> refs/remotes/origin/main
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
-    font = pygame.font.Font(None, 74)
-    small_font = pygame.font.Font(None, 36)
-    # File paths
-    scores_file = 'scores.json'
-    # Load background image
-    background = pygame.image.load('images/background.png')
-    background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
-    # Load runner-up image
-    runner_up_image = pygame.image.load('images/runner_up.png')
-    runner_up_image = pygame.transform.scale(runner_up_image, (400, 300))  # Enlarging the runner_up image
 
     font = pygame.font.Font(None, 74)
     small_font = pygame.font.Font(None, 36)
+
+    # Load background image
+    background = pygame.image.load('images/background.png')
+    background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
+
+    # Load runner-up image
+    runner_up_image = pygame.image.load('images/runner_up.png')
+    runner_up_image = pygame.transform.scale(runner_up_image, (400, 300))  # Enlarging the runner_up image
 
     # File paths
     scores_file = 'scores.json'
@@ -55,10 +57,10 @@ def high_scores(screen):
                 if event.key == pygame.K_ESCAPE:
                     running = False
 
-        screen.blit(background, (0, 0))  # Display the background image
+        screen.blit(background, (0, 0))
 
         # Title
-        title_text = font.render("High Scores", True, (255, 0, 0))
+        title_text = font.render("High Scores", True, BLACK)
         screen.blit(title_text, (screen.get_width() // 2 - title_text.get_width() // 2, 50))
 
         # Display the runner-up image
@@ -73,10 +75,10 @@ def high_scores(screen):
                 elif rank == 2:
                     position = (screen.get_width() // 2 - 150, y_offset)
                 elif rank == 3:
-                    position = (screen.get_width() // 2 + 50, y_offset)
+                    position = (screen.get_width() // 2 - 50, y_offset)
                 else:
                     position = (screen.get_width() // 2 - 100, y_offset + 60 + (rank - 4) * 40)
-
+                
                 score_text = f"{rank}. {score_entry['name']} : {score_entry['score']}"  # Add space around colon for better readability
                 score_text_rendered = small_font.render(score_text, True, BLACK)
                 screen.blit(score_text_rendered, position)
