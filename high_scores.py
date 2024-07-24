@@ -2,27 +2,27 @@ import pygame
 import json
 import os
 
+def interpolate_color(start_color, end_color, factor):
+    """Interpolate between two colors. Factor is between 0 and 1."""
+    red = start_color[0] + (end_color[0] - start_color[0]) * factor
+    green = start_color[1] + (end_color[1] - start_color[1]) * factor
+    blue = start_color[2] + (end_color[2] - start_color[2]) * factor
+    return (int(red), int(green), int(blue))
+
 def high_scores(screen):
     print("Displaying high scores...")
 
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
+    RED = (255, 0, 0)
+    BLUE = (0, 0, 255)
 
-    font = pygame.font.Font(None, 74)
-    small_font = pygame.font.Font(None, 36)
-
+    # Title font
+    title_font = pygame.font.Font(None, 74)
     # Load background image
     background = pygame.image.load('images/background.png')
-    background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
 
-    # Load runner-up image
-    runner_up_image = pygame.image.load('images/runner_up.png')
-    runner_up_image = pygame.transform.scale(runner_up_image, (400, 300))  # Enlarging the runner_up image
-
-    # File paths
     scores_file = 'scores.json'
-
-    # Load high scores from a JSON file
     try:
         if os.path.exists(scores_file):
             with open(scores_file, 'r') as f:
@@ -35,7 +35,6 @@ def high_scores(screen):
         print(f"Error decoding JSON: {e}")
         high_scores_data = []
 
-    # Sort high scores by score in descending order
     high_scores_data.sort(key=lambda x: x['score'], reverse=True)
 
     running = True
@@ -46,38 +45,44 @@ def high_scores(screen):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+            elif event.type == pygame.VIDEORESIZE:
+                screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
 
-        screen.blit(background, (0, 0))
+        screen_width, screen_height = screen.get_size()
+        background_scaled = pygame.transform.scale(background, (screen_width, screen_height))
 
-        # Title
-        title_text = font.render("High Scores", True, BLACK)
-        screen.blit(title_text, (screen.get_width() // 2 - title_text.get_width() // 2, 50))
+        screen.blit(background_scaled, (0, 0))
 
-        # Display the runner-up image
-        screen.blit(runner_up_image, (screen.get_width() // 2 - runner_up_image.get_width() // 2, 150))
+        # Title with gradient
+        title_text = "High Scores"
+        title_position = screen.get_width() // 2 - title_font.size(title_text)[0] // 2
+        x_offset = 0
+        for i, letter in enumerate(title_text):
+            color = interpolate_color(RED, BLUE, i / len(title_text))
+            letter_rendered = title_font.render(letter, True, color)
+            screen.blit(letter_rendered, (title_position + x_offset, 50))
+            x_offset += letter_rendered.get_width()
 
-        # Display top three high scores with manually adjusted positions
-        positions = [
-            (screen.get_width() // 2 - 100, 240),  # Adjust this for the first place
-            (screen.get_width() // 2 - 200, 290),  # Adjust this for the second place
-            (screen.get_width() // 2 + 80, 310)   # Adjust this for the third place
-        ]
-        
-        for rank, (pos, score_entry) in enumerate(zip(positions, high_scores_data[:3]), start=1):
+        # Font sizes for the top 3 ranks
+        font_sizes = [60, 50, 40]
+        y_offset = 150  # Starting y position for scores
+        for rank, score_entry in enumerate(high_scores_data[:3], start=1):
             try:
+                rank_font = pygame.font.Font(None, font_sizes[rank-1])
                 score_text = f"{rank}. {score_entry['name']} : {score_entry['score']}"  # Add space around colon for better readability
-                score_text_rendered = small_font.render(score_text, True, BLACK)
-                screen.blit(score_text_rendered, pos)
+                score_text_rendered = rank_font.render(score_text, True, BLACK)
+                
+                position = (screen.get_width() // 2 - score_text_rendered.get_width() // 2, y_offset + (rank - 1) * 80)
+                screen.blit(score_text_rendered, position)
             except KeyError as e:
                 print(f"Error: Missing key {e} in score entry {score_entry}")
 
         pygame.display.flip()
 
-    # Return to main menu
     return
 
 if __name__ == "__main__":
     pygame.init()
-    screen = pygame.display.set_mode((800, 600))
+    screen = pygame.display.set_mode((800, 600), pygame.RESIZABLE)
     high_scores(screen)
     pygame.quit()
