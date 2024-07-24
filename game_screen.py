@@ -4,10 +4,12 @@ import random
 import math
 import json
 import os
+
 # Function to get text input from player
 def get_text_input(screen, prompt, position):
     font = pygame.font.Font(None, 32)
-    input_box = pygame.Rect(position[0], position[1], 140, 32)
+    input_box = pygame.Rect(0, 0, 140, 32)  # Initial width is 140, will be resized based on text length
+    input_box.center = position  # Center the input box initially
     color_inactive = pygame.Color('lightskyblue3')
     color_active = pygame.Color('dodgerblue2')
     color = color_inactive
@@ -32,6 +34,12 @@ def get_text_input(screen, prompt, position):
                         text += event.unicode
 
         screen.fill((30, 30, 30))
+        
+        # Resize the box if the text is too long.
+        width = max(200, font.size(prompt + text)[0] + 10)
+        input_box.w = width
+        input_box.centerx = position[0]  # Keep the input box centered
+
         pygame.draw.rect(screen, color, input_box, 2)
         text_surface = font.render(prompt + text, True, (255, 255, 255))
         screen.blit(text_surface, (input_box.x + 5, input_box.y + 5))
@@ -385,7 +393,6 @@ def run_game(screen):
         screen.blit(score_text, (10, 10))
         screen.blit(level_text, (10, 50))
 
-
         # Display Lives as hearts
         for i in range(lives):
             screen.blit(heart_image, (screen.get_width() - (i + 1) * 40, screen.get_height() - 40))
@@ -396,7 +403,7 @@ def run_game(screen):
             screen.blit(game_over_text, (screen.get_width() // 2 - 100, screen.get_height() // 2 - 20))
             pygame.display.flip()
 
-            input_box_pos = (screen.get_width() // 2 - 100, screen.get_height() // 2 + 20)
+            input_box_pos = (screen.get_width() // 2, screen.get_height() // 2 + 20)
             player_name = get_text_input(screen, "Enter your name: ", input_box_pos)
 
             final_score = score
