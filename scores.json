@@ -8,7 +8,6 @@
         "score": 190
     },
     {
-
         "name": "sjh",
         "score": 70
     },
@@ -16,7 +15,6 @@
         "name": "tamil",
         "score": 630
     },
-   
     {
         "name": "",
         "score": 50
@@ -97,13 +95,16 @@
         "name": "",
         "score": 20
     },
-    
-
     {
         "name": "Logesh",
         "score": 930
-
     },
     {
         "name": "logesh",
-        "score": 930}]
+        "score": 930
+    },
+    {
+        "name": "",
+        "score": 30
+    }
+]
