@@ -4,7 +4,6 @@
         "score": 190
     },
     {
-
         "name": "Tanjiale",
         "score": 20
     },
@@ -12,16 +11,14 @@
         "name": "Logesh",
         "score": 410
     },
-
-
-    {   "name": "sjh",
+    {
+        "name": "sjh",
         "score": 70
     },
     {
         "name": "tamil",
         "score": 630
     },
-   
     {
         "name": "",
         "score": 50
@@ -102,15 +99,16 @@
         "name": "",
         "score": 20
     },
-    
-
     {
         "name": "Logesh",
         "score": 930
-
     },
     {
         "name": "logesh",
-        "score": 930}
+        "score": 930
+    },
+    {
+        "name": "logesh",
+        "score": 10
+    }
 ]
-
