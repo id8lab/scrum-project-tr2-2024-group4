@@ -4,7 +4,7 @@
         "score": 190
     },
     {
-<<<<<<< HEAD
+
         "name": "Tanjiale",
         "score": 20
     },
@@ -13,8 +13,7 @@
         "score": 410
     },
     {
-=======
->>>>>>> refs/remotes/origin/main
+
         "name": "sjh",
         "score": 70
     },
@@ -109,14 +108,5 @@
     {
         "name": "logesh",
         "score": 930
-    },
-    {
-<<<<<<< HEAD
-        "name": "logesh",
-        "score": 10
-=======
-        "name": "",
-        "score": 30
->>>>>>> refs/remotes/origin/main
     }
 ]
