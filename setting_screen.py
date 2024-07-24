@@ -10,7 +10,7 @@ def setting(screen):
     small_font = pygame.font.Font(None, 36)
     
     music_volume = 0.5  # Initial music volume
-    brightness = 0.5  # Initial brightness
+    brightness = 0.5  # Initial brightnesss
 
     running = True
     while running:
