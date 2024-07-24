@@ -4,18 +4,17 @@
         "score": 190
     },
     {
-<<<<<<< HEAD
+
         "name": "Tanjiale",
         "score": 20
     },
     {
         "name": "Logesh",
         "score": 410
-    }
-]
-=======
+    },
 
-        "name": "sjh",
+
+    {   "name": "sjh",
         "score": 70
     },
     {
@@ -112,5 +111,6 @@
     },
     {
         "name": "logesh",
-        "score": 930}]
->>>>>>> 116d228ac6f2ab3da4adacfe5eb7946b1efc0517
+        "score": 930}
+]
+
