@@ -1,122 +1,14 @@
 [
     {
-        "name": "sjh",
-        "score": 60
-    },
-    {
         "name": "jiale",
         "score": 190
     },
     {
-<<<<<<< HEAD
-        "name": "sjh",
-        "score": 70
-    },
-    {
-        "name": "tamil",
-        "score": 630
-    },
-    {
-        "name": "123",
-        "score": 20
-=======
         "name": "Tanjiale",
         "score": 20
     },
     {
-        "name": "",
-        "score": 50
-    },
-    {
-        "name": "",
-        "score": 0
-    },
-    {
-        "name": "asdsadqweqeasdadsasda",
-        "score": 0
-    },
-    {
-        "name": "asdsd",
-        "score": 0
-    },
-    {
-        "name": "asdsad",
-        "score": 0
-    },
-    {
-        "name": "",
-        "score": 0
-    },
-    {
-        "name": "",
-        "score": 0
-    },
-    {
-        "name": "asd",
-        "score": 0
-    },
-    {
-        "name": "adsdads",
-        "score": 0
-    },
-    {
-        "name": "asdsd",
-        "score": 0
-    },
-    {
-        "name": "asdasddsa",
-        "score": 20
-    },
-    {
-        "name": "asdsda",
-        "score": 20
-    },
-    {
-        "name": "nihao",
-        "score": 0
-    },
-    {
-        "name": "",
-        "score": 0
-    },
-    {
-        "name": "",
-        "score": 0
-    },
-    {
-        "name": "",
-        "score": 0
-    },
-    {
-        "name": "",
-        "score": 0
-    },
-    {
-        "name": "asd",
-        "score": 0
-    },
-    {
-        "name": "",
-        "score": 0
-    },
-    {
-        "name": "",
-        "score": 20
-    },
-    {
         "name": "Logesh",
-        "score": 420
-    },
-    {
-        "name": "Logesh",
-        "score": 930
-<<<<<<< HEAD
-    },
-    {
-        "name": "logesh",
-        "score": 930
-=======
->>>>>>> c7cb746bf5589a44ffc0a72638a3bbbbb746e7c4
->>>>>>> refs/remotes/origin/main
+        "score": 410
     }
 ]

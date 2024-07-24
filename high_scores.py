@@ -3,11 +3,7 @@ import pygame
 import json
 
 def high_scores(screen):
-<<<<<<< HEAD
-    print("Displaying high scores.")  
-=======
     print("Displaying high scores...")  
->>>>>>> c7cb746bf5589a44ffc0a72638a3bbbbb746e7c4
 
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
@@ -98,7 +94,7 @@ def high_scores(screen):
     # Return to main menu
     return
 
-if __name__ == "__main__":
+if __name__ == "_main_":
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
     high_scores(screen)
