@@ -5,6 +5,8 @@ import json
 import os
 from game_screen import run_game
 from high_scores import high_scores
+from setting_screen import setting
+
 
 
 # Pygame initialization
@@ -18,6 +20,10 @@ pygame.display.set_caption("Main Menu")
 
 # Load the video
 cap = cv2.VideoCapture('music/Background.mp4')
+
+# Load background music
+pygame.mixer.music.load('music/main_menu_music.mp3')  # Replace with your music file
+pygame.mixer.music.play(-1) 
 
 # Define colors
 WHITE = (255, 255, 255)
