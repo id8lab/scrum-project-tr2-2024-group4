@@ -3,29 +3,33 @@ import pygame
 import json
 
 def high_scores(screen):
+<<<<<<< HEAD
     print("Displaying high scores...")  
+=======
+
+    print("Displaying high scores.")  
+
+    print("Displaying high scores...")  
+
+    print("Displaying high scores")  
+
+>>>>>>> 116d228ac6f2ab3da4adacfe5eb7946b1efc0517
 
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
-    BRIGHT_COLOR = (255, 0, 0)  # Use a bright red color for the title
-
-    # Load custom font for the title
-    try:
-        title_font = pygame.font.Font(os.path.join('fonts', 'custom_font.ttf'), 100)  # Adjust the font size as needed
-    except FileNotFoundError:
-        print("Custom font not found. Falling back to default font.")
-        title_font = pygame.font.Font(None, 100)  # Use a default font if custom font is not found
-
+    font = pygame.font.Font(None, 74)
     small_font = pygame.font.Font(None, 36)
-
+    # File paths
+    scores_file = 'scores.json'
     # Load background image
-    try:
-        background = pygame.image.load(os.path.join('images', 'background.png'))
-        background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
-        print("Background image loaded successfully")
-    except pygame.error as e:
-        print(f"Failed to load background image: {e}")
-        background = None  # Use a default color if the background image is not found
+    background = pygame.image.load('images/background.png')
+    background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
+    # Load runner-up image
+    runner_up_image = pygame.image.load('images/runner_up.png')
+    runner_up_image = pygame.transform.scale(runner_up_image, (400, 300))  # Enlarging the runner_up image
+
+    font = pygame.font.Font(None, 74)
+    small_font = pygame.font.Font(None, 36)
 
     # File paths
     scores_file = 'scores.json'
@@ -55,36 +59,31 @@ def high_scores(screen):
                 if event.key == pygame.K_ESCAPE:
                     running = False
 
-        if background:
-            screen.blit(background, (0, 0))
-        else:
-            screen.fill(WHITE)
+        screen.blit(background, (0, 0))  # Display the background image
 
         # Title
-        title_text = title_font.render("High Scores", True, BRIGHT_COLOR)
+        title_text = font.render("High Scores", True, (255, 0, 0))
         screen.blit(title_text, (screen.get_width() // 2 - title_text.get_width() // 2, 50))
 
-        # Determine maximum width of score texts
-        max_width = 0
-        for score_entry in high_scores_data[:10]:
-            try:
-                score_text = f"{score_entry['name']} : {score_entry['score']}"  # Add space around colon for better readability
-                text_width, _ = small_font.size(score_text)
-                if text_width > max_width:
-                    max_width = text_width
-            except KeyError as e:
-                print(f"Error: Missing key {e} in score entry {score_entry}")
-
-        # Calculate initial y_offset to vertically center the text block
-        total_height = (small_font.get_height() + 10) * len(high_scores_data[:10])
-        y_offset = (screen.get_height() - total_height) // 2 + 100  # Adjust the y_offset to move text block down
+        # Display the runner-up image
+        screen.blit(runner_up_image, (screen.get_width() // 2 - runner_up_image.get_width() // 2, 150))
 
         # Display high scores
+        y_offset = 320
         for rank, score_entry in enumerate(high_scores_data[:10], start=1):
             try:
+                if rank == 1:
+                    position = (screen.get_width() // 2 - 100, y_offset - 100)
+                elif rank == 2:
+                    position = (screen.get_width() // 2 - 150, y_offset)
+                elif rank == 3:
+                    position = (screen.get_width() // 2 + 50, y_offset)
+                else:
+                    position = (screen.get_width() // 2 - 100, y_offset + 60 + (rank - 4) * 40)
+
                 score_text = f"{rank}. {score_entry['name']} : {score_entry['score']}"  # Add space around colon for better readability
                 score_text_rendered = small_font.render(score_text, True, BLACK)
-                screen.blit(score_text_rendered, (screen.get_width() // 2 - score_text_rendered.get_width() // 2, y_offset))
+                screen.blit(score_text_rendered, position)
                 y_offset += score_text_rendered.get_height() + 10  # Adjust vertical spacing here
             except KeyError as e:
                 print(f"Error: Missing key {e} in score entry {score_entry}")
