@@ -1,36 +1,32 @@
-import os
 import pygame
 import json
+import os
+
+def interpolate_color(start_color, end_color, factor):
+    """Interpolate between two colors. Factor is between 0 and 1."""
+    red = start_color[0] + (end_color[0] - start_color[0]) * factor
+    green = start_color[1] + (end_color[1] - start_color[1]) * factor
+    blue = start_color[2] + (end_color[2] - start_color[2]) * factor
+    return (int(red), int(green), int(blue))
 
 def high_scores(screen):
+<<<<<<< HEAD
     print("Displaying high scores...")  
+=======
+    print("Displaying high scores...")
+>>>>>>> refs/remotes/origin/main
 
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
-    BRIGHT_COLOR = (255, 0, 0)  # Use a bright red color for the title
+    RED = (255, 0, 0)
+    BLUE = (0, 0, 255)
 
-    # Load custom font for the title
-    try:
-        title_font = pygame.font.Font(os.path.join('fonts', 'custom_font.ttf'), 100)  # Adjust the font size as needed
-    except FileNotFoundError:
-        print("Custom font not found. Falling back to default font.")
-        title_font = pygame.font.Font(None, 100)  # Use a default font if custom font is not found
-
-    small_font = pygame.font.Font(None, 36)
-
+    # Title font
+    title_font = pygame.font.Font(None, 74)
     # Load background image
-    try:
-        background = pygame.image.load(os.path.join('images', 'background.png'))
-        background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
-        print("Background image loaded successfully")
-    except pygame.error as e:
-        print(f"Failed to load background image: {e}")
-        background = None  # Use a default color if the background image is not found
+    background = pygame.image.load('images/background.png')
 
-    # File paths
     scores_file = 'scores.json'
-
-    # Load high scores from a JSON file
     try:
         if os.path.exists(scores_file):
             with open(scores_file, 'r') as f:
@@ -43,7 +39,6 @@ def high_scores(screen):
         print(f"Error decoding JSON: {e}")
         high_scores_data = []
 
-    # Sort high scores by score in descending order
     high_scores_data.sort(key=lambda x: x['score'], reverse=True)
 
     running = True
@@ -54,48 +49,44 @@ def high_scores(screen):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+            elif event.type == pygame.VIDEORESIZE:
+                screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
 
-        if background:
-            screen.blit(background, (0, 0))
-        else:
-            screen.fill(WHITE)
+        screen_width, screen_height = screen.get_size()
+        background_scaled = pygame.transform.scale(background, (screen_width, screen_height))
 
-        # Title
-        title_text = title_font.render("High Scores", True, BRIGHT_COLOR)
-        screen.blit(title_text, (screen.get_width() // 2 - title_text.get_width() // 2, 50))
+        screen.blit(background_scaled, (0, 0))
 
-        # Determine maximum width of score texts
-        max_width = 0
-        for score_entry in high_scores_data[:10]:
+        # Title with gradient
+        title_text = "High Scores"
+        title_position = screen.get_width() // 2 - title_font.size(title_text)[0] // 2
+        x_offset = 0
+        for i, letter in enumerate(title_text):
+            color = interpolate_color(RED, BLUE, i / len(title_text))
+            letter_rendered = title_font.render(letter, True, color)
+            screen.blit(letter_rendered, (title_position + x_offset, 50))
+            x_offset += letter_rendered.get_width()
+
+        # Font sizes for the top 3 ranks
+        font_sizes = [60, 50, 40]
+        y_offset = 150  # Starting y position for scores
+        for rank, score_entry in enumerate(high_scores_data[:3], start=1):
             try:
-                score_text = f"{score_entry['name']} : {score_entry['score']}"  # Add space around colon for better readability
-                text_width, _ = small_font.size(score_text)
-                if text_width > max_width:
-                    max_width = text_width
-            except KeyError as e:
-                print(f"Error: Missing key {e} in score entry {score_entry}")
-
-        # Calculate initial y_offset to vertically center the text block
-        total_height = (small_font.get_height() + 10) * len(high_scores_data[:10])
-        y_offset = (screen.get_height() - total_height) // 2 + 100  # Adjust the y_offset to move text block down
-
-        # Display high scores
-        for rank, score_entry in enumerate(high_scores_data[:10], start=1):
-            try:
+                rank_font = pygame.font.Font(None, font_sizes[rank-1])
                 score_text = f"{rank}. {score_entry['name']} : {score_entry['score']}"  # Add space around colon for better readability
-                score_text_rendered = small_font.render(score_text, True, BLACK)
-                screen.blit(score_text_rendered, (screen.get_width() // 2 - score_text_rendered.get_width() // 2, y_offset))
-                y_offset += score_text_rendered.get_height() + 10  # Adjust vertical spacing here
+                score_text_rendered = rank_font.render(score_text, True, BLACK)
+                
+                position = (screen.get_width() // 2 - score_text_rendered.get_width() // 2, y_offset + (rank - 1) * 80)
+                screen.blit(score_text_rendered, position)
             except KeyError as e:
                 print(f"Error: Missing key {e} in score entry {score_entry}")
 
         pygame.display.flip()
 
-    # Return to main menu
     return
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     pygame.init()
-    screen = pygame.display.set_mode((800, 600))
+    screen = pygame.display.set_mode((800, 600), pygame.RESIZABLE)
     high_scores(screen)
     pygame.quit()

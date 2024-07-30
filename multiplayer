@@ -1,0 +1,104 @@
+import pygame
+import sys
+
+# Initialize Pygame
+pygame.init()
+
+# Screen dimensions
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Galaga Multiplayer")
+
+# Colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+
+# Player settings
+PLAYER_WIDTH = 50
+PLAYER_HEIGHT = 50
+PLAYER_SPEED = 5
+BULLET_SPEED = 7
+
+# Define Player class
+class Player(pygame.sprite.Sprite):
+    def __init__(self, color, start_x, start_y, up_key, down_key, left_key, right_key, shoot_key):
+        super().__init__()
+        self.image = pygame.Surface([PLAYER_WIDTH, PLAYER_HEIGHT])
+        self.image.fill(color)
+        self.rect = self.image.get_rect()
+        self.rect.x = start_x
+        self.rect.y = start_y
+        self.up_key = up_key
+        self.down_key = down_key
+        self.left_key = left_key
+        self.right_key = right_key
+        self.shoot_key = shoot_key
+        self.bullets = pygame.sprite.Group()
+
+    def update(self, keys):
+        if keys[self.up_key]:
+            self.rect.y -= PLAYER_SPEED
+        if keys[self.down_key]:
+            self.rect.y += PLAYER_SPEED
+        if keys[self.left_key]:
+            self.rect.x -= PLAYER_SPEED
+        if keys[self.right_key]:
+            self.rect.x += PLAYER_SPEED
+
+    def shoot(self):
+        bullet = Bullet(self.rect.centerx, self.rect.top)
+        self.bullets.add(bullet)
+
+# Define Bullet class
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = pygame.Surface([5, 10])
+        self.image.fill(WHITE)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    def update(self):
+        self.rect.y -= BULLET_SPEED
+        if self.rect.bottom < 0:
+            self.kill()
+
+# Create players
+player1 = Player(WHITE, SCREEN_WIDTH // 4, SCREEN_HEIGHT - PLAYER_HEIGHT - 10, pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d, pygame.K_SPACE)
+player2 = Player(WHITE, 3 * SCREEN_WIDTH // 4, SCREEN_HEIGHT - PLAYER_HEIGHT - 10, pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_RETURN)
+
+# Sprite groups
+all_sprites = pygame.sprite.Group()
+all_sprites.add(player1)
+all_sprites.add(player2)
+
+# Main game loop
+clock = pygame.time.Clock()
+running = True
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == player1.shoot_key:
+                player1.shoot()
+            if event.key == player2.shoot_key:
+                player2.shoot()
+
+    keys = pygame.key.get_pressed()
+    all_sprites.update(keys)
+    player1.bullets.update()
+    player2.bullets.update()
+
+    screen.fill(BLACK)
+    all_sprites.draw(screen)
+    player1.bullets.draw(screen)
+    player2.bullets.draw(screen)
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
+sys.exit()

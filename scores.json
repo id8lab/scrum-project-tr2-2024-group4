@@ -12,6 +12,21 @@
         "score": 20
     },
     {
+<<<<<<< HEAD
+=======
+        "name": "Logesh",
+        "score": 410
+    },
+    {
+        "name": "sjh",
+        "score": 70
+    },
+    {
+        "name": "tamil",
+        "score": 630
+    },
+    {
+>>>>>>> refs/remotes/origin/main
         "name": "",
         "score": 50
     },
@@ -92,7 +107,24 @@
         "score": 20
     },
     {
+<<<<<<< HEAD
         "name": "",
         "score": 20
+=======
+        "name": "Logesh",
+        "score": 930
+    },
+    {
+        "name": "logesh",
+        "score": 930
+    },
+    {
+        "name": "Logesh",
+        "score": 120
+    },
+    {
+        "name": "tamil",
+        "score": 0
+>>>>>>> refs/remotes/origin/main
     }
 ]
