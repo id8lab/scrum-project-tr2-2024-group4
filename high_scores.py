@@ -3,22 +3,8 @@ import pygame
 import json
 
 def high_scores(screen):
-<<<<<<< HEAD
     print("Displaying high scores...")  
 
-=======
-
-    print("Displaying high scores...")
-
-
-    print("Displaying high scores.")  
-
-    print("Displaying high scores...")  
-
-    print("Displaying high scores")  
-
-
->>>>>>> refs/remotes/origin/main
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
     BRIGHT_COLOR = (255, 0, 0)  # Use a bright red color for the title
