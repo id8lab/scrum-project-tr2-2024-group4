@@ -10,7 +10,11 @@ def interpolate_color(start_color, end_color, factor):
     return (int(red), int(green), int(blue))
 
 def high_scores(screen):
+<<<<<<< HEAD
+    print("Displaying high scores...")  
+=======
     print("Displaying high scores...")
+>>>>>>> refs/remotes/origin/main
 
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
