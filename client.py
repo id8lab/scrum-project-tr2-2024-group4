@@ -10,7 +10,7 @@ def receive_messages(client_socket):
             print(f"Received: {message}")
         except ConnectionResetError:
             break
-    client_socket.close()
+        client_socket.close()
 
 def send_messages(client_socket):
     while True:
@@ -27,7 +27,7 @@ def send_messages(client_socket):
 def connect_to_server():
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        client_socket.connect(('localhost', 12346))
+        client_socket.connect(('127.0.0.1', 12346))
         print("Connected to server.")
 
         receive_thread = threading.Thread(target=receive_messages, args=(client_socket,))

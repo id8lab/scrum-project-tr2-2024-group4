@@ -12,8 +12,6 @@
         "score": 20
     },
     {
-<<<<<<< HEAD
-=======
         "name": "Logesh",
         "score": 410
     },
@@ -26,7 +24,6 @@
         "score": 630
     },
     {
->>>>>>> refs/remotes/origin/main
         "name": "",
         "score": 50
     },
@@ -107,10 +104,6 @@
         "score": 20
     },
     {
-<<<<<<< HEAD
-        "name": "",
-        "score": 20
-=======
         "name": "Logesh",
         "score": 930
     },
@@ -125,6 +118,5 @@
     {
         "name": "tamil",
         "score": 0
->>>>>>> refs/remotes/origin/main
     }
 ]
