@@ -10,12 +10,6 @@ def interpolate_color(start_color, end_color, factor):
     return (int(red), int(green), int(blue))
 
 def high_scores(screen):
-<<<<<<< HEAD
-    print("Displaying high scores...")  
-=======
-    print("Displaying high scores...")
->>>>>>> refs/remotes/origin/main
-
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
     RED = (255, 0, 0)
@@ -24,22 +18,24 @@ def high_scores(screen):
     # Title font
     title_font = pygame.font.Font(None, 74)
     # Load background image
-    background = pygame.image.load('images/background.png')
+    try:
+        background = pygame.image.load('images/background.png')
+    except pygame.error as e:
+        print(f"Unable to load background image: {e}")
+        return
 
     scores_file = 'scores.json'
-    try:
-        if os.path.exists(scores_file):
+    high_scores_data = []
+
+    if os.path.exists(scores_file):
+        try:
             with open(scores_file, 'r') as f:
                 high_scores_data = json.load(f)
             print(f"Loaded high scores: {high_scores_data}")
-        else:
-            print(f"File '{scores_file}' not found. Creating a new one.")
-            high_scores_data = []
-    except json.JSONDecodeError as e:
-        print(f"Error decoding JSON: {e}")
-        high_scores_data = []
+        except (json.JSONDecodeError, IOError) as e:
+            print(f"Error reading or decoding {scores_file}: {e}")
 
-    high_scores_data.sort(key=lambda x: x['score'], reverse=True)
+    high_scores_data.sort(key=lambda x: x.get('score', 0), reverse=True)
 
     running = True
     while running:
@@ -73,7 +69,9 @@ def high_scores(screen):
         for rank, score_entry in enumerate(high_scores_data[:3], start=1):
             try:
                 rank_font = pygame.font.Font(None, font_sizes[rank-1])
-                score_text = f"{rank}. {score_entry['name']} : {score_entry['score']}"  # Add space around colon for better readability
+                name = score_entry.get('name', 'Unknown')
+                score = score_entry.get('score', 0)
+                score_text = f"{rank}. {name} : {score}"
                 score_text_rendered = rank_font.render(score_text, True, BLACK)
                 
                 position = (screen.get_width() // 2 - score_text_rendered.get_width() // 2, y_offset + (rank - 1) * 80)
